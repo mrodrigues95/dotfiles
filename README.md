@@ -7,14 +7,13 @@ Terminal environment for macOS and WSL, managed with home-manager. One repo, one
 - CLI tools (ripgrep, fd, fzf, jq, eza)
 - Fish shell with autosuggestions and syntax highlighting
 - Starship prompt
-- WezTerm config (cross-platform with platform-specific background blur)
-- herdr config (install herdr separately)
+- WezTerm (installed via Nix on macOS, via winget on WSL + config synced to Windows side)
+- herdr config (install herdr separately via `brew install herdr`)
 - opencode agent config
 
 ## Prerequisites
 
 - **Nix** - installed automatically by `bootstrap.sh` via Determinate Nix
-- **WezTerm** - install separately (`brew install --cask wezterm` on macOS, download from [wezterm.org](https://wezterm.org) on Windows)
 - **herdr** - install via Homebrew (`brew install herdr`)
 
 ## Fresh-machine setup
@@ -25,11 +24,12 @@ cd dotfiles
 ./bootstrap.sh
 ```
 
-`bootstrap.sh` does four things:
+`bootstrap.sh` does four things (five on WSL):
 1. Installs Determinate Nix (if not present)
 2. Symlinks this repo to `~/.dotfiles`
 3. Checks the `username` in `flake.nix` against your actual username, offers to fix if they differ
 4. Runs the first `home-manager switch`
+5. (WSL only) Installs WezTerm on Windows via winget and syncs config
 
 After that, `home-manager` is available and you're on the normal workflow below.
 
@@ -51,7 +51,7 @@ Edit the config files in place, then apply:
 ./refresh.sh
 ```
 
-You only need to run this when changing something in `nix/` (packages, shell config, etc.). Symlinked files like `wezterm.lua` update instantly since they're symlinked, not copied.
+You only need to run this when changing something in `nix/` (packages, shell config, etc.). Symlinked files like `wezterm.lua` update instantly on macOS. On WSL, `refresh.sh` also copies the config to the Windows side so native WezTerm picks up changes.
 
 ## Repo tour
 

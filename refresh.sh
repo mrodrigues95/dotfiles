@@ -9,4 +9,13 @@ case "$(uname -s)" in
 esac
 
 ln -sfn "$DIR" ~/.dotfiles
-exec home-manager switch --flake ~/.dotfiles/nix#$FLAKE_HOST
+home-manager switch --flake ~/.dotfiles/nix#$FLAKE_HOST
+
+if [ "$FLAKE_HOST" = "wsl" ]; then
+  WIN_PROFILE="$(cmd.exe /c 'echo %USERPROFILE%' 2>/dev/null | tr -d '\r' | sed 's/\\/\//g' | sed 's/^C:/\/mnt\/c/')"
+  if [ -n "$WIN_PROFILE" ]; then
+    WEZTERM_WIN_DIR="$WIN_PROFILE/.config/wezterm"
+    mkdir -p "$WEZTERM_WIN_DIR"
+    cp "$DIR/home/.config/wezterm/wezterm.lua" "$WEZTERM_WIN_DIR/wezterm.lua"
+  fi
+fi

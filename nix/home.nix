@@ -13,6 +13,7 @@ in
     fzf
     jq
     eza
+    wezterm
     nerd-fonts.hack
   ];
 

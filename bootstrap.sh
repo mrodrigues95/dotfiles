@@ -50,4 +50,22 @@ NIX_BIN="$(command -v nix)"
 "$NIX_BIN" run github:nix-community/home-manager/release-26.05#home-manager -- \
   switch --flake ~/.dotfiles/nix#$FLAKE_HOST
 
+if [ "$FLAKE_HOST" = "wsl" ]; then
+  echo "==> Step 5: install WezTerm on Windows and sync config"
+  echo "    Installing WezTerm via winget..."
+  cmd.exe /c 'winget install --id wez.wezterm --accept-source-agreements --accept-package-agreements' || {
+    echo "    Warning: winget install failed. Install WezTerm manually from https://wezterm.org"
+  }
+
+  WIN_PROFILE="$(cmd.exe /c 'echo %USERPROFILE%' 2>/dev/null | tr -d '\r' | sed 's/\\/\//g' | sed 's/^C:/\/mnt\/c/')"
+  if [ -n "$WIN_PROFILE" ]; then
+    WEZTERM_WIN_DIR="$WIN_PROFILE/.config/wezterm"
+    mkdir -p "$WEZTERM_WIN_DIR"
+    cp "$DIR/home/.config/wezterm/wezterm.lua" "$WEZTERM_WIN_DIR/wezterm.lua"
+    echo "    Synced config to $WEZTERM_WIN_DIR"
+  else
+    echo "    Warning: Could not detect Windows user profile. Copy wezterm.lua manually."
+  fi
+fi
+
 echo "==> Done. Use ./refresh.sh for future changes."
