@@ -3,14 +3,6 @@ local wezterm = require("wezterm")
 local config = wezterm.config_builder()
 
 config.color_scheme = "VisiBone (terminal.sexy)"
-config.font = wezterm.font_with_fallback({
-  "Hack Nerd Font",
-  "JetBrains Mono Nerd Font",
-  "FiraCode Nerd Font",
-  "Menlo",
-  "Consolas",
-  "monospace",
-})
 config.font_size = 12.0
 config.hide_tab_bar_if_only_one_tab = true
 config.window_decorations = "RESIZE"
@@ -29,5 +21,23 @@ elseif wezterm.target_triple:find("windows") then
   }
   config.default_domain = "WSL:Ubuntu"
 end
+
+-- set terminal size and position
+wezterm.on("gui-startup", function(cmd)
+  local screen = wezterm.gui.screens().active
+  
+  local ratio = 0.5
+  local width = screen.width * ratio
+  local height = screen.height * ratio
+  
+  local x = (screen.width - width) / 2
+  local y = (screen.height - height) / 2
+  
+  local tab, pane, window = wezterm.mux.spawn_window({
+    position = { x = x, y = y, origin = 'ActiveScreen' }
+  })
+  
+  window:gui_window():set_inner_size(width, height)
+end)
 
 return config

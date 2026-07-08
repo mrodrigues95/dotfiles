@@ -48,7 +48,7 @@ fi
 echo "==> Step 4: first home-manager switch (pinned to release-26.05)"
 NIX_BIN="$(command -v nix)"
 "$NIX_BIN" run github:nix-community/home-manager/release-26.05#home-manager -- \
-  switch --flake ~/.dotfiles/nix#$FLAKE_HOST
+  switch --flake ~/.dotfiles/nix#$FLAKE_HOST -b backup
 
 if [ "$FLAKE_HOST" = "wsl" ]; then
   echo "==> Step 5: install WezTerm on Windows and sync config"

@@ -57,7 +57,7 @@ You only need to run this when changing something in `nix/` (packages, shell con
 
 - `nix/flake.nix` - entry point. Defines two `homeConfigurations`: `mac` and `wsl`
 - `nix/home.nix` - shared home-manager config: packages, Fish, Starship, symlinks
-- `home/.config/wezterm/wezterm.lua` - WezTerm config (rose-pine-moon, Hack Nerd Font, platform-specific blur)
+- `home/.config/wezterm/wezterm.lua` - WezTerm config
 - `home/.config/herdr/` - herdr config (symlinked to `~/.config/herdr`)
 - `home/AGENTS.md` - opencode agent instructions (blank, edit to your liking)
 - `bootstrap.sh` - first-time setup
