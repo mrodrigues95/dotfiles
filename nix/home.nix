@@ -27,6 +27,9 @@ in
       ll = "eza -l";
       la = "eza -la";
     };
+    shellInit = ''
+      set -gx fish_user_paths ${config.home.homeDirectory}/.nix-profile/bin /nix/var/nix/profiles/default/bin ${config.home.homeDirectory}/.opencode/bin $fish_user_paths
+    '';
     interactiveShellInit = ''
       starship init fish | source
     '';
