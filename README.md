@@ -9,12 +9,13 @@ Terminal environment for macOS and WSL, managed with home-manager. One repo, one
 - Starship prompt
 - WezTerm (installed via Nix on macOS, via winget on WSL + config synced to Windows side)
 - herdr config (install herdr separately via `brew install herdr`)
-- opencode agent config
+- Agents config (Claude, Codex, OpenCode) all share one `AGENTS.md`
 
 ## Prerequisites
 
 - **Nix** - installed automatically by `bootstrap.sh` via Determinate Nix
-- **herdr** - install via Homebrew (`brew install herdr`)
+- **herdr** (optional) - install via Homebrew (`brew install herdr`)
+- **Claude / Codex / OpenCode** (optional) - install any of these to use the shared `AGENTS.md` config
 
 ## Fresh-machine setup
 
@@ -56,12 +57,14 @@ You only need to run this when changing something in `nix/` (packages, shell con
 ## Repo tour
 
 - `nix/flake.nix` - entry point. Defines two `homeConfigurations`: `mac` and `wsl`
-- `nix/home.nix` - shared home-manager config: packages, Fish, Starship, symlinks
-- `home/.config/wezterm/wezterm.lua` - WezTerm config
-- `home/.config/herdr/` - herdr config (symlinked to `~/.config/herdr`)
-- `home/AGENTS.md` - opencode agent instructions (blank, edit to your liking)
+- `nix/home.nix` - shared home-manager config: packages, Fish, Starship, and the symlinks described below
 - `bootstrap.sh` - first-time setup
 - `refresh.sh` - re-applies config after changes
+- `home/` - the actual config files that get symlinked into place (WezTerm, herdr, shared `AGENTS.md`)
+
+## How the symlinks work
+
+The files under `home/` are the real files - editing them here is editing your live config, no rebuild needed to see the change in your editor. `home.nix` uses `mkOutOfStoreSymlink` to point paths like `~/.config/wezterm` straight at `home/.config/wezterm` in this repo, so the two never drift out of sync. You only run `./refresh.sh` when you change something that isn't just a symlinked file, like a package list or shell config.
 
 ## Make it yours
 
