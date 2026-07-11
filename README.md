@@ -8,13 +8,11 @@ Terminal environment for macOS and WSL, managed with home-manager. One repo, one
 - Fish shell with autosuggestions and syntax highlighting
 - Starship prompt
 - WezTerm (installed via Nix on macOS, via winget on WSL + config synced to Windows side)
-- herdr config (install herdr separately via `brew install herdr`)
 - Agents config (Claude, Codex, OpenCode) all share one `AGENTS.md`
 
 ## Prerequisites
 
 - **Nix** - installed automatically by `bootstrap.sh` via Determinate Nix
-- **herdr** (optional) - install via Homebrew (`brew install herdr`)
 - **Claude / Codex / OpenCode** (optional) - install any of these to use the shared `AGENTS.md` config
 
 ## Fresh-machine setup
@@ -60,7 +58,7 @@ You only need to run this when changing something in `nix/` (packages, shell con
 - `nix/home.nix` - shared home-manager config: packages, Fish, Starship, and the symlinks described below
 - `bootstrap.sh` - first-time setup
 - `refresh.sh` - re-applies config after changes
-- `home/` - the actual config files that get symlinked into place (WezTerm, herdr, shared `AGENTS.md`)
+- `home/` - the actual config files that get symlinked into place (WezTerm, shared `AGENTS.md`)
 
 ## How the symlinks work
 
