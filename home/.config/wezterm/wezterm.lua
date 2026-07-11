@@ -8,6 +8,12 @@ config.hide_tab_bar_if_only_one_tab = true
 config.window_decorations = "RESIZE"
 config.warn_about_missing_glyphs = false
 
+config.keys = {
+  { key = "d", mods = "CTRL", action = wezterm.action.SplitHorizontal { domain = "CurrentPaneDomain" } },
+  { key = "d", mods = "CTRL|SHIFT", action = wezterm.action.SplitVertical { domain = "CurrentPaneDomain" } },
+}
+
+-- set fish as the default shell
 if wezterm.target_triple:find("darwin") then
   config.default_prog = { "/Users/mrodrigues/.nix-profile/bin/fish", "-l" }
 elseif wezterm.target_triple:find("windows") then
@@ -39,5 +45,10 @@ wezterm.on("gui-startup", function(cmd)
   
   window:gui_window():set_inner_size(width, height)
 end)
+
+config.keys = {
+  { key = "d", mods = "CTRL", action = wezterm.action.SplitHorizontal { domain = "CurrentPaneDomain" } },
+  { key = "d", mods = "CTRL|SHIFT", action = wezterm.action.SplitVertical { domain = "CurrentPaneDomain" } },
+}
 
 return config
