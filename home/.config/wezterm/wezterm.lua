@@ -1,5 +1,4 @@
 local wezterm = require("wezterm")
-
 local config = wezterm.config_builder()
 
 config.color_scheme = "VisiBone (terminal.sexy)"
@@ -12,6 +11,7 @@ config.animation_fps = 120
 config.keys = {
   { key = "d", mods = "CTRL", action = wezterm.action.SplitHorizontal { domain = "CurrentPaneDomain" } },
   { key = "d", mods = "CTRL|SHIFT", action = wezterm.action.SplitVertical { domain = "CurrentPaneDomain" } },
+  { key = "w", mods = "CTRL|SHIFT", action = wezterm.action.CloseCurrentPane { confirm = false } },
 }
 
 -- set fish as the default shell
@@ -46,10 +46,5 @@ wezterm.on("gui-startup", function(cmd)
   
   window:gui_window():set_inner_size(width, height)
 end)
-
-config.keys = {
-  { key = "d", mods = "CTRL", action = wezterm.action.SplitHorizontal { domain = "CurrentPaneDomain" } },
-  { key = "d", mods = "CTRL|SHIFT", action = wezterm.action.SplitVertical { domain = "CurrentPaneDomain" } },
-}
 
 return config
