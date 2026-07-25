@@ -3,7 +3,6 @@ local config = wezterm.config_builder()
 
 config.color_scheme = "VisiBone (terminal.sexy)"
 config.font_size = 12.0
-config.hide_tab_bar_if_only_one_tab = true
 config.window_decorations = "RESIZE"
 config.warn_about_missing_glyphs = false
 config.animation_fps = 120
