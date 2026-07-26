@@ -8,6 +8,7 @@ Terminal environment for macOS and WSL, managed with home-manager. One repo, one
 - Fish shell with autosuggestions and syntax highlighting
 - Starship prompt
 - WezTerm (installed via Nix on macOS, via winget on WSL + config synced to Windows side)
+- Zed (config synced to Windows side on WSL; install manually)
 - Agents config (Claude, Codex, OpenCode) all share one `AGENTS.md`
 
 ## Prerequisites
@@ -50,7 +51,7 @@ Edit the config files in place, then apply:
 ./refresh.sh
 ```
 
-You only need to run this when changing something in `nix/` (packages, shell config, etc.). Symlinked files like `wezterm.lua` update instantly on macOS. On WSL, `refresh.sh` also copies the config to the Windows side so native WezTerm picks up changes.
+You only need to run this when changing something in `nix/` (packages, shell config, etc.). Symlinked files like `wezterm.lua` update instantly on macOS. On WSL, `refresh.sh` also copies the config to the Windows side so native WezTerm and Zed pick up changes.
 
 ## Repo tour
 
@@ -58,11 +59,20 @@ You only need to run this when changing something in `nix/` (packages, shell con
 - `nix/home.nix` - shared home-manager config: packages, Fish, Starship, and the symlinks described below
 - `bootstrap.sh` - first-time setup
 - `refresh.sh` - re-applies config after changes
-- `home/` - the actual config files that get symlinked into place (WezTerm, shared `AGENTS.md`)
+- `home/` - the actual config files that get symlinked into place (WezTerm, Zed, shared `AGENTS.md`)
 
 ## How the symlinks work
 
-The files under `home/` are the real files - editing them here is editing your live config, no rebuild needed to see the change in your editor. `home.nix` uses `mkOutOfStoreSymlink` to point paths like `~/.config/wezterm` straight at `home/.config/wezterm` in this repo, so the two never drift out of sync. You only run `./refresh.sh` when you change something that isn't just a symlinked file, like a package list or shell config.
+When you run `./refresh.sh`, home-manager creates symlinks like this:
+
+```
+~/.config/zed  →  ~/dotfiles/home/.config/zed
+~/.config/wezterm  →  ~/dotfiles/home/.config/wezterm
+```
+
+This means the files under `home/` are the real files. Editing them here — e.g. opening `home/.config/zed/settings.json` in your editor — is editing your live config instantly. No rebuild, no copying, no drift between what's in the repo and what's on disk.
+
+This works on macOS and Linux. On WSL, the Linux side uses symlinks just the same. However, native Windows apps (WezTerm GUI, Zed GUI) can't follow Linux symlinks, so `refresh.sh` also copies those config files to the Windows filesystem under `/mnt/c/Users/...`. You only need to re-run `refresh.sh` after editing a synced config from the Linux side, or when changing something that isn't just a symlinked file (like a package list or shell config).
 
 ## Make it yours
 
