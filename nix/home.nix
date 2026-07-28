@@ -1,4 +1,4 @@
-{ config, pkgs, username, ... }:
+{ config, pkgs, username, herdr, ... }:
 
 let
   dotfiles = "${config.home.homeDirectory}/.dotfiles";
@@ -15,6 +15,7 @@ in
     eza
     wezterm
     nerd-fonts.hack
+    herdr
   ];
 
   fonts.fontconfig.enable = true;
@@ -77,6 +78,8 @@ in
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.config/wezterm";
   home.file.".config/zed".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.config/zed";
+  home.file.".config/herdr".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.config/herdr";
   home.file.".config/opencode/AGENTS.md".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/AGENTS.md";
   home.file.".claude/CLAUDE.md".source =

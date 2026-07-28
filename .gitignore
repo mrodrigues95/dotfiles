@@ -1,3 +1,8 @@
+# herdr runtime artifacts (regenerated at runtime; never commit)
+home/.config/herdr/*.log
+home/.config/herdr/session.json
+home/.config/herdr/*.sock
+
 .DS_Store
 result
 result-*

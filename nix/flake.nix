@@ -3,17 +3,21 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-26.05-darwin";
+    herdr.url = "github:ogulcancelik/herdr/v0.7.5";
 
     home-manager.url = "github:nix-community/home-manager/release-26.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = inputs@{ self, home-manager, nixpkgs }:
+  outputs = inputs@{ self, home-manager, nixpkgs, herdr }:
     let
       mkHome = { system, username, homeDirectory }:
         home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs.legacyPackages.${system};
-          extraSpecialArgs = { inherit username; };
+          extraSpecialArgs = {
+            inherit username;
+            herdr = herdr.packages.${system}.default;
+          };
           modules = [
             ./home.nix
             {
