@@ -9,7 +9,7 @@ Terminal environment for macOS and WSL, managed with home-manager. One repo, one
 - Starship prompt
 - WezTerm (installed via Nix on macOS, via winget on WSL + config synced to Windows side)
 - Zed (config synced to Windows side on WSL; install manually)
-- Agents config (Claude, Codex, OpenCode) all share one `AGENTS.md`
+- Global `~/.agents` folder
 - Pi config (settings, pinned packages, and local extension/theme directories)
 - Node.js via nvm (optional - nvm.fish plugin, node binaries managed under `~/.local/share/nvm`)
 
@@ -64,16 +64,18 @@ You only need to run this when changing something in `nix/` (packages, shell con
 - `nix/home.nix` - shared home-manager config: packages, Fish, Starship, and the symlinks described below
 - `bootstrap.sh` - first-time setup
 - `refresh.sh` - re-applies config after changes
-- `home/` - the actual config files that get symlinked into place (WezTerm, Zed, shared `AGENTS.md`, Pi config)
+- `home/` - the actual config files that get symlinked into place (WezTerm, Zed, the shared `.agents/` folder, Pi config)
 
 ## How the symlinks work
 
 When you run `./refresh.sh`, home-manager creates symlinks like this:
 
 ```
+~/.agents  →  ~/dotfiles/home/.agents
 ~/.config/zed  →  ~/dotfiles/home/.config/zed
 ~/.config/wezterm  →  ~/dotfiles/home/.config/wezterm
 ~/.pi/agent/settings.json  →  ~/dotfiles/home/.pi/agent/settings.json
+~/.pi/agent/AGENTS.md  →  ~/dotfiles/home/.agents/AGENTS.md
 ~/.pi/agent/extensions  →  ~/dotfiles/home/.pi/agent/extensions
 ~/.pi/agent/themes  →  ~/dotfiles/home/.pi/agent/themes
 ```
