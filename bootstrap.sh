@@ -50,8 +50,85 @@ NIX_BIN="$(command -v nix)"
 "$NIX_BIN" run github:nix-community/home-manager/release-26.05#home-manager -- \
   switch --flake ~/.dotfiles/nix#$FLAKE_HOST -b backup
 
+echo "==> Step 5: Pi CLI (optional)"
+if command -v pi >/dev/null 2>&1; then
+  echo "    pi already installed, skipping"
+elif command -v npm >/dev/null 2>&1; then
+  read -r -p "    Install Pi CLI via npm? [y/N] " REPLY
+  if [ "$REPLY" != "y" ] && [ "$REPLY" != "Y" ]; then
+    echo "    Skipped. Install manually later with:"
+    echo "    npm install -g --ignore-scripts @earendil-works/pi-coding-agent"
+  else
+    npm install -g --ignore-scripts @earendil-works/pi-coding-agent
+
+    # The npm global bin may not be on PATH in this shell; resolve pi directly.
+    PI_BIN="$(npm prefix -g 2>/dev/null)/bin/pi"
+    [ -x "$PI_BIN" ] || PI_BIN="$(command -v pi || true)"
+
+    if [ ! -x "$PI_BIN" ]; then
+      echo "    WARNING: pi binary not found after install."
+      echo "    Add \"$(npm prefix -g)/bin\" to your PATH, then re-run ./refresh.sh"
+    else
+      # The pinned extension in settings.json depends on node-pty, a native module
+      # with no prebuilt Linux binary. Get it building now so the first pi run works.
+      if [ "$FLAKE_HOST" = "wsl" ]; then
+        echo "    Ensuring native build toolchain (make + g++)..."
+        if command -v make >/dev/null 2>&1 && { command -v g++ >/dev/null 2>&1 || command -v clang++ >/dev/null 2>&1; }; then
+          echo "      make + C++ compiler already present"
+        elif command -v apt-get >/dev/null 2>&1; then
+          if sudo apt-get update -qq && sudo apt-get install -y -qq build-essential; then
+            echo "      Installed build-essential"
+          else
+            echo "      WARNING: could not install build-essential (sudo may require a password)."
+            echo "      Run: sudo apt-get install -y build-essential"
+          fi
+        else
+          echo "      WARNING: no apt-get found; install make and a C++ compiler manually"
+        fi
+      fi
+
+      PI_PKG="$(jq -r '.packages[]? // empty' "$DIR/home/.pi/agent/settings.json" 2>/dev/null | head -n1)" || true
+      if [ -n "$PI_PKG" ]; then
+        echo "    Installing pinned Pi package ($PI_PKG)..."
+        "$PI_BIN" install "$PI_PKG" || echo "    WARNING: package install failed (pi will retry at first startup)"
+      fi
+
+      node_pty_ok() {
+        node -e "require(process.env.HOME + '/.pi/agent/npm/node_modules/node-pty')" >/dev/null 2>&1
+      }
+      if ! command -v node >/dev/null 2>&1; then
+        echo "    (skipping node-pty verification: node not on PATH)"
+      elif node_pty_ok; then
+        echo "      node-pty loads OK"
+      elif [ "$FLAKE_HOST" = "wsl" ]; then
+        echo "      node-pty failed to load; rebuilding with zig against the system glibc..."
+        GLIBC_VER="$(ldd --version 2>/dev/null | head -1 | sed -nE 's/.*GLIBC ([0-9]+\.[0-9]+).*/\1/p')"
+        [ -n "$GLIBC_VER" ] || GLIBC_VER="2.39"
+        if (
+          cd "$HOME/.pi/agent/npm/node_modules/node-pty" && \
+          nix shell nixpkgs#zig nixpkgs#gnumake -c bash -c \
+            "CC='zig cc -target x86_64-linux-gnu.$GLIBC_VER' CXX='zig c++ -target x86_64-linux-gnu.$GLIBC_VER' npm rebuild node-pty"
+        ) && node_pty_ok; then
+          echo "      node-pty rebuilt and loads OK"
+        else
+          echo "      WARNING: node-pty still broken (see README \"Native builds\")."
+        fi
+      else
+        echo "      WARNING: node-pty failed to load. Ensure Xcode Command Line Tools: xcode-select --install"
+      fi
+
+      echo "    Pi ready. Authenticate and refresh model catalogs:"
+      echo "      pi auth"
+      echo "      pi update --models"
+    fi
+  fi
+else
+  echo "    npm not found. Install Node.js (e.g. via nvm), then run:"
+  echo "    npm install -g --ignore-scripts @earendil-works/pi-coding-agent"
+fi
+
 if [ "$FLAKE_HOST" = "wsl" ]; then
-  echo "==> Step 5: install WezTerm on Windows and sync config"
+  echo "==> Step 6: install WezTerm on Windows and sync config"
   echo "    Installing WezTerm via winget..."
   cmd.exe /c 'winget install --id wez.wezterm --accept-source-agreements --accept-package-agreements' || {
     echo "    Warning: winget install failed. Install WezTerm manually from https://wezterm.org"
