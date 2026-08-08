@@ -84,35 +84,6 @@ This works on macOS and Linux. On WSL, the Linux side uses symlinks just the sam
 
 Pi is an opt-in CLI; this repo does not vendor it. Home Manager links only the authored Pi files below; everything else about Pi stays local to `~/.pi/agent` on each machine.
 
-### Installation
-
-```sh
-npm install -g --ignore-scripts @earendil-works/pi-coding-agent
-```
-
-`bootstrap.sh` offers to run this for you (it needs Node.js/npm, e.g. via nvm). After a fresh install:
-
-```sh
-pi auth              # authenticate providers (e.g. opencode-go)
-pi update --models   # refresh model catalogs
-```
-
-Your Pi settings default to the `opencode-go` provider and `deepseek-v4-flash` model, but the model catalog itself is not in this repo — it is fetched and cached locally (see below), so refresh it before your first session.
-
-### What this repo manages
-
-Home Manager owns exactly these paths in `~/.pi/agent`:
-
-| Path | Purpose |
-|------|---------|
-| `settings.json` | UI/preferences plus the pinned package list |
-| `extensions/` | Local, repository-authored extensions (auto-loaded) |
-| `themes/` | Custom theme JSON files |
-
-All three are out-of-store symlinks into `home/.pi/agent/`, so editing them here is editing your live config. After changing a local extension or theme, run `/reload` inside Pi.
-
-The package list in `settings.json` is deliberately pinned (e.g. `npm:@plannotator/pi-extension@0.26.4`). Pinned versions are immutable — `pi update` will not move them. To upgrade a pinned package, install the new version explicitly (e.g. `pi install npm:@plannotator/pi-extension@0.27.0`), verify it, and commit the changed `settings.json`. Pi installs missing pinned packages automatically at startup.
-
 ### Native builds (Linux/WSL)
 
 The `@plannotator/pi-extension` package pulls in `node-pty`, a native module with no prebuilt Linux binary (macOS and Windows ship prebuilds; Linux compiles from source). `bootstrap.sh` handles this automatically when you opt into Pi:
