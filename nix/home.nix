@@ -28,6 +28,13 @@ in
 
   programs.fish = {
     enable = true;
+    shellInit = ''
+      # Fallback PATH for nvm-managed Node. Appended (not prepended) so the
+      # version nvm.fish activates always wins; this keeps the pinned version's
+      # global binaries (e.g. pi) reachable when another version is active.
+      # Keep in sync with NODE_VERSION in bootstrap.sh.
+      set -gx PATH $PATH "$HOME/.local/share/nvm/v24.18.1/bin"
+    '';
     plugins = [
       {
         name = "fisher";
@@ -36,6 +43,17 @@ in
           repo = "fisher";
           rev = "4.4.8";
           sha256 = "sha256-Sf671UGOQXtOMrqoEOIBG5TCt0p5fd+aKGF2ExImbbs=";
+        };
+      }
+      {
+        # Fish-native nvm (does not need bash nvm). Node binaries live in
+        # ~/.local/share/nvm/<version> (nvm_data), managed by bootstrap.sh.
+        name = "nvm.fish";
+        src = pkgs.fetchFromGitHub {
+          owner = "jorgebucaran";
+          repo = "nvm.fish";
+          rev = "abd3002b6d2d578d484a5aea94dd1517dded6d42";
+          sha256 = "15i404nnks9zb75b6avnsg29x0v937mkh4pxnx8fchhbv0zyin84";
         };
       }
     ];

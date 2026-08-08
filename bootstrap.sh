@@ -50,7 +50,58 @@ NIX_BIN="$(command -v nix)"
 "$NIX_BIN" run github:nix-community/home-manager/release-26.05#home-manager -- \
   switch --flake ~/.dotfiles/nix#$FLAKE_HOST -b backup
 
-echo "==> Step 5: Pi CLI (optional)"
+echo "==> Step 5: Node.js via nvm (optional)"
+NVM_DIR="${NVM_DIR:-$HOME/.local/share/nvm}"
+NODE_VERSION="v24.18.1"
+NODE_BIN="$NVM_DIR/$NODE_VERSION/bin"
+if command -v node >/dev/null 2>&1 && command -v npm >/dev/null 2>&1; then
+  echo "    node $(node --version 2>/dev/null) already installed, skipping"
+elif [ -x "$NODE_BIN/node" ] && [ -x "$NODE_BIN/npm" ]; then
+  # Installed by a previous run but not on PATH (e.g. fresh bash terminal
+  # before nvm.fish activates): use it instead of asking again.
+  echo "    node already installed at $NVM_DIR/$NODE_VERSION; adding to PATH for this run"
+  export PATH="$NODE_BIN:$PATH"
+else
+  read -r -p "    Install Node.js v24.18.1 into ~/.local/share/nvm? [y/N] " REPLY
+  if [ "$REPLY" != "y" ] && [ "$REPLY" != "Y" ]; then
+    echo "    Skipped. The Pi step below will warn about missing npm."
+  else
+    case "$(uname -s)-$(uname -m)" in
+      Darwin-arm64)  NODE_PLATFORM="darwin-arm64" ;;
+      Darwin-x86_64) NODE_PLATFORM="darwin-x64" ;;
+      Linux-x86_64)  NODE_PLATFORM="linux-x64" ;;
+      Linux-aarch64) NODE_PLATFORM="linux-arm64" ;;
+      *) NODE_PLATFORM="" ;;
+    esac
+    if [ -z "$NODE_PLATFORM" ]; then
+      echo "    WARNING: unsupported platform ($(uname -s)-$(uname -m)); install Node.js manually"
+    else
+      echo "    Downloading node-$NODE_VERSION-$NODE_PLATFORM.tar.gz..."
+      mkdir -p "$NVM_DIR/$NODE_VERSION"
+      if curl -fsSL "https://nodejs.org/dist/$NODE_VERSION/node-$NODE_VERSION-$NODE_PLATFORM.tar.gz" \
+          | tar -xz -C "$NVM_DIR/$NODE_VERSION"; then
+        mv "$NVM_DIR/$NODE_VERSION/node-$NODE_VERSION-$NODE_PLATFORM"/* "$NVM_DIR/$NODE_VERSION/"
+        rm -rf "$NVM_DIR/$NODE_VERSION/node-$NODE_VERSION-$NODE_PLATFORM"
+        export PATH="$NODE_BIN:$PATH"
+        # Refresh the nvm.fish version index (mirrors nvm.fish's _nvm_index_update),
+        # so nvm ls/use/install work. Silently ignored if the fetch fails.
+        curl -fsSL "https://nodejs.org/dist/index.tab" 2>/dev/null | awk -v OFS='\t' '
+          /v0.9.12/ { exit }
+          NR > 1 { print $1 (NR == 2 ? " latest" : $10 != "-" ? " lts/" tolower($10) : "") }
+        ' > "$NVM_DIR/.index" 2>/dev/null || true
+        # nvm.fish auto-activates the default version in new interactive shells.
+        fish -c "set -U nvm_default_version $NODE_VERSION" >/dev/null 2>&1 || true
+        echo "    Installed node $(node --version) + npm $(npm --version) at $NVM_DIR/$NODE_VERSION"
+        echo "    Fish shells: nvm use default (or open a new shell)"
+      else
+        rm -rf "$NVM_DIR/$NODE_VERSION"
+        echo "    WARNING: node download failed (network?); the Pi step will warn about missing npm."
+      fi
+    fi
+  fi
+fi
+
+echo "==> Step 6: Pi CLI (optional)"
 if command -v pi >/dev/null 2>&1; then
   echo "    pi already installed, skipping"
 elif command -v npm >/dev/null 2>&1; then
@@ -123,12 +174,12 @@ elif command -v npm >/dev/null 2>&1; then
     fi
   fi
 else
-  echo "    npm not found. Install Node.js (e.g. via nvm), then run:"
+  echo "    npm not found. Accept the Node.js step (Step 5) or install Node.js manually:"
   echo "    npm install -g --ignore-scripts @earendil-works/pi-coding-agent"
 fi
 
 if [ "$FLAKE_HOST" = "wsl" ]; then
-  echo "==> Step 6: install WezTerm on Windows and sync config"
+  echo "==> Step 7: install WezTerm on Windows and sync config"
   echo "    Installing WezTerm via winget..."
   cmd.exe /c 'winget install --id wez.wezterm --accept-source-agreements --accept-package-agreements' || {
     echo "    Warning: winget install failed. Install WezTerm manually from https://wezterm.org"

@@ -11,12 +11,13 @@ Terminal environment for macOS and WSL, managed with home-manager. One repo, one
 - Zed (config synced to Windows side on WSL; install manually)
 - Agents config (Claude, Codex, OpenCode) all share one `AGENTS.md`
 - Pi config (settings, pinned packages, and local extension/theme directories)
+- Node.js via nvm (optional - nvm.fish plugin, node binaries managed under `~/.local/share/nvm`)
 
 ## Prerequisites
 
 - **Nix** - installed automatically by `bootstrap.sh` via Determinate Nix
 - **Claude / Codex / OpenCode** (optional) - install any of these to use the shared `AGENTS.md` config
-- **Node.js + npm** (optional, for Pi) - Pi is installed via npm; on a fresh machine install Node first (e.g. via [nvm](https://github.com/nvm-sh/nvm)) or accept the skip in `bootstrap.sh`
+- **Node.js + npm** (optional) - `bootstrap.sh` can install Node via its nvm step; skip it and the Pi step will warn
 
 ## Fresh-machine setup
 
@@ -26,13 +27,14 @@ cd dotfiles
 ./bootstrap.sh
 ```
 
-`bootstrap.sh` does five things (six on WSL):
+`bootstrap.sh` does six things (seven on WSL):
 1. Installs Determinate Nix (if not present)
 2. Symlinks this repo to `~/.dotfiles`
 3. Checks the `username` in `flake.nix` against your actual username, offers to fix if they differ
 4. Runs the first `home-manager switch`
-5. Optionally installs the Pi CLI via npm (skipped if Node/npm is missing or you decline); on WSL it also installs a build toolchain and pre-builds the pinned extension's native module (`node-pty`) so Pi works on first run
-6. (WSL only) Installs WezTerm on Windows via winget and syncs config
+5. Optionally installs Node.js v24.18.1 into `~/.local/share/nvm` (fish-native `nvm` command via the nvm.fish plugin)
+6. Optionally installs the Pi CLI via npm (skipped if npm is missing or you decline); on WSL it also installs a build toolchain and pre-builds the pinned extension's native module (`node-pty`) so Pi works on first run
+7. (WSL only) Installs WezTerm on Windows via winget and syncs config
 
 After that, `home-manager` is available and you're on the normal workflow below.
 
