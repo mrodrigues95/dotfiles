@@ -138,11 +138,11 @@ elif command -v npm >/dev/null 2>&1; then
         fi
       fi
 
-      PI_PKG="$(jq -r '.packages[]? // empty' "$DIR/home/.pi/agent/settings.json" 2>/dev/null | head -n1)" || true
-      if [ -n "$PI_PKG" ]; then
+      while IFS= read -r PI_PKG; do
+        [ -n "$PI_PKG" ] || continue
         echo "    Installing pinned Pi package ($PI_PKG)..."
-        "$PI_BIN" install "$PI_PKG" || echo "    WARNING: package install failed (pi will retry at first startup)"
-      fi
+        "$PI_BIN" install "$PI_PKG" || echo "    WARNING: package install failed for $PI_PKG (pi will retry at first startup)"
+      done < <(jq -r '.packages[]? // empty' "$DIR/home/.pi/agent/settings.json" 2>/dev/null)
 
       node_pty_ok() {
         node -e "require(process.env.HOME + '/.pi/agent/npm/node_modules/node-pty')" >/dev/null 2>&1

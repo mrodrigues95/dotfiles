@@ -6,7 +6,9 @@
   "theme": "dark",
   "hideThinkingBlock": true,
   "packages": [
-    "npm:@plannotator/pi-extension@0.26.4"
+    "npm:@plannotator/pi-extension@0.26.4",
+    "npm:pi-mcp-adapter",
+    "npm:@demigodmode/pi-web-agent"
   ],
   "lastChangelogVersion": "0.84.1"
 }

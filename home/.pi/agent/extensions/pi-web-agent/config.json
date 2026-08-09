@@ -1,0 +1,16 @@
+{
+  "presentation": {
+    "defaultMode": "compact"
+  },
+  "backends": {
+    "search": {
+      "provider": "duckduckgo"
+    },
+    "fetch": {
+      "provider": "http"
+    },
+    "headless": {
+      "provider": "local-browser"
+    }
+  }
+}
