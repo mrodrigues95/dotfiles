@@ -8,7 +8,7 @@
   "packages": [
     "npm:@plannotator/pi-extension@0.26.4",
     "npm:pi-mcp-adapter",
-    "npm:@demigodmode/pi-web-agent"
+    "npm:pi-web-access"
   ],
   "lastChangelogVersion": "0.84.1"
 }
