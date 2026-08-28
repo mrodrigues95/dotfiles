@@ -1,25 +1,10 @@
 # dotfiles
 
-Terminal environment for macOS and WSL, managed with home-manager. One repo, one command, consistent setup everywhere.
+Terminal environment for macOS and WSL, managed with home-manager. One repo, one command.
 
-## What you get
+Installs CLI tools (ripgrep, fd, fzf, jq, eza), fish + starship, WezTerm, Zed config, the shared `~/.agents` folder, Pi config, and (optionally) Node via nvm.
 
-- CLI tools (ripgrep, fd, fzf, jq, eza)
-- Fish shell with autosuggestions and syntax highlighting
-- Starship prompt
-- WezTerm (installed via Nix on macOS, via winget on WSL + config synced to Windows side)
-- Zed (config synced to Windows side on WSL; install manually)
-- Global `~/.agents` folder
-- Pi config (settings, pinned packages, and local extension/theme directories)
-- Node.js via nvm (optional - nvm.fish plugin, node binaries managed under `~/.local/share/nvm`)
-
-## Prerequisites
-
-- **Nix** - installed automatically by `bootstrap.sh` via Determinate Nix
-- **Claude / Codex / OpenCode** (optional) - install any of these to use the shared `AGENTS.md` config
-- **Node.js + npm** (optional) - `bootstrap.sh` can install Node via its nvm step; skip it and the Pi step will warn
-
-## Fresh-machine setup
+## Setup
 
 ```sh
 git clone https://github.com/mrodrigues/dotfiles.git
@@ -27,88 +12,74 @@ cd dotfiles
 ./bootstrap.sh
 ```
 
-`bootstrap.sh` does six things (seven on WSL):
-1. Installs Determinate Nix (if not present)
-2. Symlinks this repo to `~/.dotfiles`
-3. Checks the `username` in `flake.nix` against your actual username, offers to fix if they differ
-4. Runs the first `home-manager switch`
-5. Optionally installs Node.js v24.18.1 into `~/.local/share/nvm` (fish-native `nvm` command via the nvm.fish plugin)
-6. Optionally installs the Pi CLI via npm (skipped if npm is missing or you decline); on WSL it also installs a build toolchain and pre-builds the pinned extension's native module (`node-pty`) so Pi works on first run
-7. (WSL only) Installs WezTerm on Windows via winget and syncs config
+`bootstrap.sh` is interactive — Enter runs everything (full fresh-machine setup), or pick a subset with numbers/ranges (`1 3 5-7`), `all`, or `none`.
 
-After that, `home-manager` is available and you're on the normal workflow below.
+1. **Install Determinate Nix** (skipped if already installed)
+2. **Symlink this repo → `~/.dotfiles`**
+3. **Fix username in `nix/flake.nix`** — checks against your actual user
+4. **Fish shell** — deselect to keep your default shell (see "Fish on/off")
+5. **`home-manager switch`** — CLI tools + config symlinks
+6. **Node.js v24.18.1 via nvm** — node + npm under `~/.local/share/nvm`
+7. **Pi CLI via npm** — plus WSL build toolchain + `node-pty` prebuild
+8. **(WSL only) WezTerm on Windows** — winget install + config sync
 
-### Validate without applying
+Picking 5 auto-adds the steps it needs (2, 3, and 1 when Nix isn't installed). Already-installed items self-skip, so re-running with a subset is the way to catch up on one thing.
 
-Once Nix is installed, you can check that the config builds without touching your system:
+No other prerequisites — Nix comes from the script itself (Claude/Codex/OpenCode and Node are optional extras).
+
+Validate without applying:
 
 ```sh
 nix flake check ./nix --no-build
-nix build ./nix#homeConfigurations.mac.activationPackage --dry-run  # macOS
-nix build ./nix#homeConfigurations.wsl.activationPackage --dry-run  # WSL
+nix build ./nix#homeConfigurations.wsl.activationPackage --dry-run   # or .mac.
 ```
 
 ## Daily use
 
-Edit the config files in place, then apply:
+After changing anything in `nix/` (or a Windows-synced config on WSL):
 
 ```sh
 ./refresh.sh
 ```
 
-You only need to run this when changing something in `nix/` (packages, shell config, etc.). Symlinked files like `wezterm.lua` update instantly on macOS. On WSL, `refresh.sh` also copies the config to the Windows side so native WezTerm and Zed pick up changes.
+Symlinked files (wezterm.lua, zed settings, etc.) are live instantly — no refresh needed on the Linux/macOS side.
 
-## Repo tour
+## Fish on/off
 
-- `nix/flake.nix` - entry point. Defines two `homeConfigurations`: `mac` and `wsl`
-- `nix/home.nix` - shared home-manager config: packages, Fish, Starship, and the symlinks described below
-- `bootstrap.sh` - first-time setup
-- `refresh.sh` - re-applies config after changes
-- `home/` - the actual config files that get symlinked into place (WezTerm, Zed, the shared `.agents/` folder, Pi config)
+Fish is optional. The choice is a `~/.nofish` marker (machine-local), honored by bootstrap, refresh, and WezTerm:
 
-## How the symlinks work
+- **Enable**: select item 4, or `rm -f ~/.nofish` + `./refresh.sh`
+- **Disable**: deselect item 4, or `touch ~/.nofish` + `./refresh.sh`
+- With the marker, home-manager builds the `-nofish` config (no fish) and WezTerm silently falls back to your default shell
+- Node works without fish — binaries are in `~/.local/share/nvm/v24.18.1/bin` (the `nvm` command is fish-only)
+- If fish is your WSL login shell, switch away first (`chsh`)
 
-When you run `./refresh.sh`, home-manager creates symlinks like this:
+## Repo layout
 
-```
-~/.agents  →  ~/dotfiles/home/.agents
-~/.config/zed  →  ~/dotfiles/home/.config/zed
-~/.config/wezterm  →  ~/dotfiles/home/.config/wezterm
-~/.pi/agent/settings.json  →  ~/dotfiles/home/.pi/agent/settings.json
-~/.pi/agent/AGENTS.md  →  ~/dotfiles/home/.agents/AGENTS.md
-~/.pi/agent/extensions  →  ~/dotfiles/home/.pi/agent/extensions
-~/.pi/agent/themes  →  ~/dotfiles/home/.pi/agent/themes
-```
+- `nix/flake.nix` — entry point; configs `mac`, `wsl`, and their `-nofish` variants
+- `nix/home.nix` — packages, fish, starship, symlinks
+- `bootstrap.sh` — interactive first-time setup
+- `refresh.sh` — re-apply after changes
+- `home/` — the live config files (symlinked into `~`)
 
-This means the files under `home/` are the real files. Editing them here — e.g. opening `home/.config/zed/settings.json` in your editor — is editing your live config instantly. No rebuild, no copying, no drift between what's in the repo and what's on disk.
+## Where config lives
 
-This works on macOS and Linux. On WSL, the Linux side uses symlinks just the same. However, native Windows apps (WezTerm GUI, Zed GUI) can't follow Linux symlinks, so `refresh.sh` also copies those config files to the Windows filesystem under `/mnt/c/Users/...`. You only need to re-run `refresh.sh` after editing a synced config from the Linux side, or when changing something that isn't just a symlinked file (like a package list or shell config).
+`home/` is the real config. home-manager symlinks `~/.agents`, `~/.config/{wezterm,zed,herdr}`, and `~/.pi/agent/*` to the matching paths in the repo, so editing here edits your live config — no drift. On WSL, native Windows apps can't follow Linux symlinks, so `refresh.sh` also copies wezterm.lua + zed settings to the Windows side. WezTerm pane chords use a CTRL+Q leader.
 
-## Pi configuration
+## Pi
 
-Pi is an opt-in CLI; this repo does not vendor it. Home Manager links only the authored Pi files below; everything else about Pi stays local to `~/.pi/agent` on each machine.
+Pi is opt-in; only the authored files under `home/.pi/agent` are managed (settings, extensions, themes, AGENTS.md) — runtime state stays local.
 
-### Native builds (Linux/WSL)
-
-The `@plannotator/pi-extension` package pulls in `node-pty`, a native module with no prebuilt Linux binary (macOS and Windows ship prebuilds; Linux compiles from source). `bootstrap.sh` handles this automatically when you opt into Pi:
-
-1. Ensures `make` + a C++ compiler, installing `build-essential` via apt when missing (requires sudo)
-2. Pre-installs the pinned package so the compile happens during setup, not at first `pi` launch
-3. Verifies `node-pty` actually loads; if it fails (e.g. a Nix toolchain on PATH links against a newer glibc than your system glibc), rebuilds it with zig targeting your system glibc version — no sudo needed for the fallback since Nix was already installed in step 1
-
-If the automatic steps fail (e.g. apt/sudo unavailable), do them by hand:
+On WSL, Pi's pinned extension needs `node-pty`, which has no Linux prebuild. `bootstrap.sh` installs `build-essential`, pre-installs the package so the compile happens at setup, and rebuilds with zig against your glibc if the load still fails. Manual fallback:
 
 ```sh
-sudo apt-get install -y build-essential   # Debian/Ubuntu (WSL)
+sudo apt-get install -y build-essential
 cd ~/.pi/agent/npm/node_modules/node-pty
-# replace 2.39 with your `ldd --version` glibc version
 nix shell nixpkgs#zig nixpkgs#gnumake -c bash -c \
-  "CC='zig cc -target x86_64-linux-gnu.2.39' CXX='zig c++ -target x86_64-linux-gnu.2.39' npm rebuild node-pty"
+  "CC='zig cc -target x86_64-linux-gnu.2.39' CXX='zig c++ -target x86_64-linux-gnu.2.39' npm rebuild node-pty"   # 2.39 = your `ldd --version` glibc
 ```
 
 ## Make it yours
 
-If you clone this repo, review these before running `bootstrap.sh`:
-
-- **Username**: `bootstrap.sh` detects your username and offers to update `nix/flake.nix`. Or change the `username` lines in `nix/flake.nix` manually.
-- **Host label**: `mac` and `wsl` are used in `flake.nix`, `bootstrap.sh`, and `refresh.sh`. If you rename them, update all three.
+- **Username**: bootstrap detects yours and offers to update `nix/flake.nix` (or edit it manually)
+- **Host labels**: `mac`, `wsl`, and the `-nofish` variants appear in `flake.nix`, `bootstrap.sh`, and `refresh.sh` — rename all three if you change them

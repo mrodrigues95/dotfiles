@@ -12,7 +12,7 @@ config.max_fps = 240
 config.animation_fps = 240
 
 -- keybinds
-config.leader = { key = "q", mods = "ALT", timeout_milliseconds = 1000 }
+config.leader = { key = "q", mods = "CTRL", timeout_milliseconds = 1000 }
 config.keys = {
     {
         mods = "LEADER",
@@ -76,16 +76,29 @@ config.keys = {
     },
 }
 
--- set fish as the default shell
+-- set the default shell: fish from the home-manager nix profile when it is
+-- installed, otherwise leave the OS default shell. Honors bootstrap's fish
+-- toggle (~/.nofish): when fish is skipped the binary is absent and WezTerm
+-- falls back to the user's own shell instead of failing on a missing path.
+local home = os.getenv("HOME")
+
 if wezterm.target_triple:find("darwin") then
-  config.default_prog = { "/Users/mrodrigues/.nix-profile/bin/fish", "-l" }
+  if home and io.open(home .. "/.nix-profile/bin/fish") then
+    config.default_prog = { home .. "/.nix-profile/bin/fish", "-l" }
+  end
 elseif wezterm.target_triple:find("windows") then
   config.wsl_domains = {
     {
       name = "WSL:Ubuntu",
       distribution = "Ubuntu",
       default_cwd = "/home/mrodrigues",
-      default_prog = { "/home/mrodrigues/.nix-profile/bin/fish", "-l" },
+      -- Resolve the shell inside WSL: exec fish when the nix profile has it,
+      -- otherwise fall back to the WSL login shell (e.g. bash).
+      default_prog = {
+        "bash",
+        "-c",
+        'if [ -x "$HOME/.nix-profile/bin/fish" ]; then exec "$HOME/.nix-profile/bin/fish" -l; else exec "$SHELL" -l; fi',
+      },
     },
   }
   config.default_domain = "WSL:Ubuntu"

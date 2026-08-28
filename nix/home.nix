@@ -1,4 +1,4 @@
-{ config, pkgs, username, herdr, ... }:
+{ config, lib, pkgs, username, fish, herdr, ... }:
 
 let
   dotfiles = "${config.home.homeDirectory}/.dotfiles";
@@ -26,7 +26,7 @@ in
     "${config.home.homeDirectory}/.opencode/bin"
   ];
 
-  programs.fish = {
+  programs.fish = lib.mkIf fish {
     enable = true;
     shellInit = ''
       # Fallback PATH for nvm-managed Node. Appended (not prepended) so the

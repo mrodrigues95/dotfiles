@@ -11,11 +11,11 @@
 
   outputs = inputs@{ self, home-manager, nixpkgs, herdr }:
     let
-      mkHome = { system, username, homeDirectory }:
+      mkHome = { system, username, homeDirectory, fish ? true }:
         home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs.legacyPackages.${system};
           extraSpecialArgs = {
-            inherit username;
+            inherit username fish;
             herdr = herdr.packages.${system}.default;
           };
           modules = [
@@ -26,18 +26,26 @@
             }
           ];
         };
-    in
-    {
-      homeConfigurations."mac" = mkHome {
+
+      macArgs = {
         system = "aarch64-darwin";
         username = "mrodrigues";
         homeDirectory = "/Users/mrodrigues";
       };
-
-      homeConfigurations."wsl" = mkHome {
+      wslArgs = {
         system = "x86_64-linux";
         username = "mrodrigues";
         homeDirectory = "/home/mrodrigues";
+      };
+    in
+    {
+      homeConfigurations = {
+        "mac" = mkHome macArgs;
+        # No-fish variants: selected by bootstrap.sh / refresh.sh when the
+        # ~/.nofish marker exists (skip fish, keep the default shell).
+        "mac-nofish" = mkHome (macArgs // { fish = false; });
+        "wsl" = mkHome wslArgs;
+        "wsl-nofish" = mkHome (wslArgs // { fish = false; });
       };
     };
 }

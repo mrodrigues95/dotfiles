@@ -8,6 +8,12 @@ case "$(uname -s)" in
   *)      echo "Unsupported OS: $(uname -s)"; exit 1 ;;
 esac
 
+# Honor the bootstrap fish toggle: ~/.nofish present => build the config
+# without fish (keeps the same shell choice between bootstrap and refresh).
+if [ -f "$HOME/.nofish" ]; then
+  FLAKE_HOST="${FLAKE_HOST}-nofish"
+fi
+
 ln -sfn "$DIR" ~/.dotfiles
 
 NIX_BIN="$(command -v nix)"
