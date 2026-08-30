@@ -8,7 +8,9 @@
   "packages": [
     "npm:@plannotator/pi-extension@0.26.4",
     "npm:pi-mcp-adapter",
-    "npm:pi-web-access"
+    "npm:pi-web-access",
+    "npm:@ff-labs/pi-fff",
+    "git:github.com/DietrichGebert/ponytail"
   ],
   "lastChangelogVersion": "0.84.1"
 }
