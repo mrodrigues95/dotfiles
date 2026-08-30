@@ -3,7 +3,10 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-26.05-darwin";
-    herdr.url = "github:ogulcancelik/herdr/v0.7.5";
+    herdr.url = "github:herdrdev/herdr/v0.8.2";
+    # herdr pins an older nixpkgs that fetches crates from crates.io/api
+    # (403-blocked); our nixpkgs vendors from static.crates.io instead.
+    herdr.inputs.nixpkgs.follows = "nixpkgs";
 
     home-manager.url = "github:nix-community/home-manager/release-26.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
