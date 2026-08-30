@@ -101,6 +101,8 @@ in
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.config/zed";
   home.file.".config/herdr".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.config/herdr";
+  home.file.".config/rpiv-advisor".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.config/rpiv-advisor";
 
   home.file.".config/opencode/AGENTS.md".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.agents/AGENTS.md";

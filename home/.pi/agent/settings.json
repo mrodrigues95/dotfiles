@@ -10,7 +10,8 @@
     "npm:pi-mcp-adapter",
     "npm:pi-web-access",
     "npm:@ff-labs/pi-fff",
-    "git:github.com/DietrichGebert/ponytail"
+    "git:github.com/DietrichGebert/ponytail",
+    "npm:@juicesharp/rpiv-advisor"
   ],
   "lastChangelogVersion": "0.84.1"
 }
