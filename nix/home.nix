@@ -16,6 +16,14 @@ in
     wezterm
     nerd-fonts.hack
     herdr
+    # herdr pane shell: herdr itself falls back to $SHELL when default_shell is
+    # unset, which stays the old login shell (e.g. zsh) on machines where only
+    # the interactive shell switched to fish. This wrapper is on PATH for both
+    # fish and no-fish variants: fish where installed, else the login shell.
+    (pkgs.writeShellScriptBin "herdr-shell" ''
+      if command -v fish >/dev/null 2>&1; then exec fish -l; fi
+      exec "$SHELL" -l
+    '')
   ];
 
   fonts.fontconfig.enable = true;

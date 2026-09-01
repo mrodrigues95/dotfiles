@@ -36,19 +36,23 @@ step_fix_username() {
   echo "==> Step 3: Personalize the configured username"
   REAL_USER="$(whoami)"
   FLAKE_USER="$(sed -nE 's/^[[:space:]]*username = "([^"]+)";.*/\1/p' "$DIR/nix/flake.nix" | head -n1)"
+  # homeDirectory must follow the username: /Users/<user> on macOS, /home/<user> on Linux.
+  [ "$(uname -s)" = "Darwin" ] && HOME_PREFIX="/Users" || HOME_PREFIX="/home"
+  FLAKE_HOME="$(sed -nE "s|^[[:space:]]*homeDirectory = \"(${HOME_PREFIX}/[^\"]+)\";.*|\1|p" "$DIR/nix/flake.nix" | head -n1)"
+  EXPECT_HOME="${HOME_PREFIX}/${REAL_USER}"
   if [ -z "$FLAKE_USER" ]; then
     echo "    Could not find the \"username = \" line in flake.nix."
     echo "    Edit nix/flake.nix yourself before continuing."
     exit 1
-  elif [ "$FLAKE_USER" != "$REAL_USER" ]; then
-    echo "    flake.nix is configured for user \"$FLAKE_USER\", but you are \"$REAL_USER\"."
-    read -r -p "    Rewrite flake.nix's \"username = \" line to \"$REAL_USER\"? [y/N] " REPLY
+  elif [ "$FLAKE_USER" != "$REAL_USER" ] || [ "$FLAKE_HOME" != "$EXPECT_HOME" ]; then
+    echo "    flake.nix is configured for user \"$FLAKE_USER\" (home $FLAKE_HOME), but you are \"$REAL_USER\" (home $EXPECT_HOME)."
+    read -r -p "    Rewrite flake.nix's username + homeDirectory for \"$REAL_USER\"? [y/N] " REPLY
     if [ "$REPLY" = "y" ] || [ "$REPLY" = "Y" ]; then
-      if [ "$(uname -s)" = "Darwin" ]; then
-        sed -i '' -E "s/^([[:space:]]*username = \")[^\"]+(\";.*)/\1${REAL_USER}\2/" "$DIR/nix/flake.nix"
-      else
-        sed -i -E "s/^([[:space:]]*username = \")[^\"]+(\";.*)/\1${REAL_USER}\2/" "$DIR/nix/flake.nix"
-      fi
+      SEDI=(sed -i)
+      [ "$(uname -s)" = "Darwin" ] && SEDI=(sed -i '')
+      "${SEDI[@]}" -E "s/^([[:space:]]*username = \")[^\"]+(\";.*)/\1${REAL_USER}\2/" "$DIR/nix/flake.nix"
+      # homeDirectory per host block: each line keeps its own /Users or /home prefix.
+      "${SEDI[@]}" -E "s,^([[:space:]]*homeDirectory = \")/(Users|home)/[^\"]+(\";.*),\1/\2/${REAL_USER}\3," "$DIR/nix/flake.nix"
       echo "    Updated. Review the change with: git diff nix/flake.nix"
     else
       echo "    Skipped. Edit the \"username = \" line in nix/flake.nix yourself before continuing."
@@ -87,14 +91,23 @@ step_node() {
   NVM_DIR="${NVM_DIR:-$HOME/.local/share/nvm}"
   NODE_VERSION="v24.18.1"
   NODE_BIN="$NVM_DIR/$NODE_VERSION/bin"
-  if command -v node >/dev/null 2>&1 && command -v npm >/dev/null 2>&1; then
-    echo "    node $(node --version 2>/dev/null) already installed, skipping"
+  # Skip only when the on-PATH node really is ours (lives under NVM_DIR). A node
+  # from elsewhere (e.g. a previous bash-nvm install) is invisible to nvm.fish,
+  # so it must not satisfy this check. process.execPath resolves symlinks and
+  # works where readlink -f does not (macOS).
+  if command -v node >/dev/null 2>&1 && command -v npm >/dev/null 2>&1 \
+     && [[ "$(node -p 'process.execPath' 2>/dev/null)" == "$NVM_DIR"/* ]]; then
+    echo "    node $(node --version 2>/dev/null) already installed in $NVM_DIR, skipping"
   elif [ -x "$NODE_BIN/node" ] && [ -x "$NODE_BIN/npm" ]; then
     # Installed by a previous run but not on PATH (e.g. fresh bash terminal
     # before nvm.fish activates): use it instead of asking again.
     echo "    node already installed at $NVM_DIR/$NODE_VERSION; adding to PATH for this run"
     export PATH="$NODE_BIN:$PATH"
   else
+    if command -v node >/dev/null 2>&1; then
+      echo "    Note: node $(node --version 2>/dev/null) found at $(command -v node) - outside $NVM_DIR,"
+      echo "    so nvm.fish shells can't see it; installing ours."
+    fi
     read -r -p "    Install Node.js v24.18.1 into ~/.local/share/nvm? [y/N] " REPLY
     if [ "$REPLY" != "y" ] && [ "$REPLY" != "Y" ]; then
       echo "    Skipped. The Pi step below will warn about missing npm."
