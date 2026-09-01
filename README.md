@@ -12,18 +12,15 @@ cd dotfiles
 ./bootstrap.sh
 ```
 
-`bootstrap.sh` is interactive — Enter runs everything (full fresh-machine setup), or pick a subset with numbers/ranges (`1 3 5-7`), `all`, or `none`.
+`bootstrap.sh` runs every step in order; already-installed items self-skip, so re-running is the way to catch up on one thing.
 
 1. **Install Determinate Nix** (skipped if already installed)
 2. **Symlink this repo → `~/.dotfiles`**
 3. **Fix username in `nix/flake.nix`** — checks against your actual user
-4. **Fish shell** — deselect to keep your default shell (see "Fish on/off")
-5. **`home-manager switch`** — CLI tools + config symlinks
-6. **Node.js v24.18.1 via nvm** — node + npm under `~/.local/share/nvm`
-7. **Pi CLI via npm** — plus WSL build toolchain + `node-pty` prebuild
-8. **(WSL only) WezTerm on Windows** — winget install + config sync
-
-Picking 5 auto-adds the steps it needs (2, 3, and 1 when Nix isn't installed). Already-installed items self-skip, so re-running with a subset is the way to catch up on one thing.
+4. **`home-manager switch`** — CLI tools + config symlinks
+5. **Node.js v24.18.1 via nvm** — node + npm under `~/.local/share/nvm`
+6. **Pi CLI via npm** — plus WSL build toolchain + `node-pty` prebuild
+7. **(WSL only) WezTerm on Windows** — winget install + config sync
 
 No other prerequisites — Nix comes from the script itself (Claude/Codex/OpenCode and Node are optional extras).
 
@@ -48,8 +45,8 @@ Symlinked files (wezterm.lua, zed settings, etc.) are live instantly — no refr
 
 Fish is optional. The choice is a `~/.nofish` marker (machine-local), honored by bootstrap, refresh, and WezTerm:
 
-- **Enable**: select item 4, or `rm -f ~/.nofish` + `./refresh.sh`
-- **Disable**: deselect item 4, or `touch ~/.nofish` + `./refresh.sh`
+- **Enable**: `./bootstrap.sh --fish`, or `rm -f ~/.nofish` + `./refresh.sh`
+- **Disable**: `./bootstrap.sh --nofish`, or `touch ~/.nofish` + `./refresh.sh`
 - With the marker, home-manager builds the `-nofish` config (no fish) and WezTerm silently falls back to your default shell
 - Node works without fish — binaries are in `~/.local/share/nvm/v24.18.1/bin` (the `nvm` command is fish-only)
 - If fish is your WSL login shell, switch away first (`chsh`)
@@ -58,7 +55,7 @@ Fish is optional. The choice is a `~/.nofish` marker (machine-local), honored by
 
 - `nix/flake.nix` — entry point; configs `mac`, `wsl`, and their `-nofish` variants
 - `nix/home.nix` — packages, fish, starship, symlinks
-- `bootstrap.sh` — interactive first-time setup
+- `bootstrap.sh` — first-time setup (runs every step; each self-skips)
 - `refresh.sh` — re-apply after changes
 - `home/` — the live config files (symlinked into `~`)
 

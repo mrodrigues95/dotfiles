@@ -7,15 +7,15 @@ in
 {
   home.stateVersion = "24.11";
 
-  home.packages = with pkgs; [
-    ripgrep
-    fd
-    fzf
-    jq
-    eza
-    wezterm
-    nerd-fonts.hack
-    herdr
+  home.packages = with pkgs;
+    [
+      ripgrep
+      fd
+      fzf
+      jq
+      eza
+      nerd-fonts.hack
+      herdr
     # herdr pane shell: herdr itself falls back to $SHELL when default_shell is
     # unset, which stays the old login shell (e.g. zsh) on machines where only
     # the interactive shell switched to fish. This wrapper is on PATH for both
@@ -24,7 +24,10 @@ in
       if command -v fish >/dev/null 2>&1; then exec fish -l; fi
       exec "$SHELL" -l
     '')
-  ];
+    ]
+    # WezTerm runs on the Windows side on WSL (winget, bootstrap step 7);
+    # the nix package is only needed on macOS.
+    ++ lib.optionals pkgs.stdenv.isDarwin [ wezterm ];
 
   fonts.fontconfig.enable = true;
 
@@ -86,17 +89,6 @@ in
         error_symbol = "[❯](red)";
       };
       cmd_duration.format = "[$duration]($style) ";
-      azure.symbol = "☁️ ";
-      battery = {
-        full_symbol = "• ";
-        charging_symbol = "⇡ ";
-        discharging_symbol = "⇣ ";
-        unknown_symbol = "❓ ";
-        empty_symbol = "❗ ";
-      };
-      erlang.symbol = "ⓔ ";
-      nodejs.symbol = "[⬢](bold green) ";
-      pulumi.symbol = "🧊 ";
     };
   };
 

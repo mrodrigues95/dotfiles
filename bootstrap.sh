@@ -8,13 +8,9 @@ case "$(uname -s)" in
   *)      echo "Unsupported OS: $(uname -s)"; exit 1 ;;
 esac
 
-# Fish toggle marker: present = fish disabled. Picked up by step 5,
-# refresh.sh, and WezTerm's shell fallback.
+# Fish toggle marker: present = fish disabled. Flipped by --fish/--nofish,
+# picked up by step 4, refresh.sh, and WezTerm's shell fallback.
 NOFISH="$HOME/.nofish"
-
-# ---------------------------------------------------------------------------
-# Step functions
-# ---------------------------------------------------------------------------
 
 step_install_nix() {
   echo "==> Step 1: Install Determinate Nix"
@@ -63,19 +59,8 @@ step_fix_username() {
   fi
 }
 
-step_fish() {
-  echo "==> Step 4: Fish shell (home-manager)"
-  if [ -f "$NOFISH" ]; then
-    rm -f "$NOFISH"
-    echo "    Fish enabled (removed $NOFISH). It will be installed on the"
-    echo "    next home-manager switch (step 5 or ./refresh.sh)."
-  else
-    echo "    Fish already enabled, nothing to do."
-  fi
-}
-
 step_home_switch() {
-  echo "==> Step 5: First home-manager switch (pinned to release-26.05)"
+  echo "==> Step 4: First home-manager switch (pinned to release-26.05)"
   HM_HOST="$FLAKE_HOST"
   if [ -f "$NOFISH" ]; then
     HM_HOST="${FLAKE_HOST}-nofish"
@@ -87,7 +72,7 @@ step_home_switch() {
 }
 
 step_node() {
-  echo "==> Step 6: Node.js via nvm (optional)"
+  echo "==> Step 5: Node.js via nvm (optional)"
   NVM_DIR="${NVM_DIR:-$HOME/.local/share/nvm}"
   NODE_VERSION="v24.18.1"
   NODE_BIN="$NVM_DIR/$NODE_VERSION/bin"
@@ -140,7 +125,7 @@ step_node() {
             # to use node in their current shell instead.
             echo "    Installed node $(node --version) + npm $(npm --version) at $NVM_DIR/$NODE_VERSION"
             echo "    Fish is not enabled - add $NODE_BIN to your shell PATH,"
-            echo "    or re-enable Fish (menu item 4) for the nvm command."
+            echo "    or re-enable Fish (./bootstrap.sh --fish) for the nvm command."
           else
             # nvm.fish auto-activates the default version in new interactive shells.
             fish -c "set -U nvm_default_version $NODE_VERSION" >/dev/null 2>&1 || true
@@ -157,7 +142,7 @@ step_node() {
 }
 
 step_pi() {
-  echo "==> Step 7: Pi CLI (optional)"
+  echo "==> Step 6: Pi CLI (optional)"
   if command -v pi >/dev/null 2>&1; then
     echo "    pi already installed, skipping"
   elif command -v npm >/dev/null 2>&1; then
@@ -230,13 +215,13 @@ step_pi() {
       fi
     fi
   else
-    echo "    npm not found. Accept the Node.js step (Step 6) or install Node.js manually:"
+    echo "    npm not found. Accept the Node.js step (Step 5) or install Node.js manually:"
     echo "    npm install -g --ignore-scripts @earendil-works/pi-coding-agent"
   fi
 }
 
 step_wezterm_windows() {
-  echo "==> Step 8: install WezTerm on Windows and sync config"
+  echo "==> Step 7: install WezTerm on Windows and sync config"
   echo "    Installing WezTerm via winget..."
   cmd.exe /c 'winget install --id wez.wezterm --accept-source-agreements --accept-package-agreements' || {
     echo "    Warning: winget install failed. Install WezTerm manually from https://wezterm.org"
@@ -258,180 +243,22 @@ step_wezterm_windows() {
   fi
 }
 
-# ---------------------------------------------------------------------------
-# Interactive selection
-# ---------------------------------------------------------------------------
+# Fish toggle follows the marker: --fish enables (removes it), --nofish
+# disables (creates it). Without a flag the current choice persists.
+case "${1:-}" in
+  --fish)   rm -f "$NOFISH" ;;
+  --nofish) touch "$NOFISH" ;;
+esac
 
-STEPS_DESC=()
-STEPS_FN=()
-
-add_step() {
-  STEPS_DESC+=("$1")
-  STEPS_FN+=("$2")
-}
-
-add_step "Install Determinate Nix - Nix package manager (home-manager needs it)" step_install_nix
-add_step "Symlink this repo to ~/.dotfiles - makes it available to home-manager and refresh.sh" step_symlink_repo
-add_step "Fix username in nix/flake.nix - checks against your user, offers to fix on mismatch" step_fix_username
-add_step "Fish shell (home-manager) - fish + fisher + nvm.fish + starship init + abbrs; deselect = keep zsh/bash" step_fish
-add_step "Home-manager switch - CLI tools + config symlinks (.agents, wezterm, zed, herdr, Pi, AGENTS.md)" step_home_switch
-add_step "Node.js v24.18.1 via nvm - node + npm into ~/.local/share/nvm (works with or without fish)" step_node
-add_step "Pi CLI via npm - pi-coding-agent + pinned packages + node-pty prep (WSL: build toolchain)" step_pi
+step_install_nix
+step_symlink_repo
+step_fix_username
+step_home_switch
+step_node
+step_pi
 if [ "$FLAKE_HOST" = "wsl" ]; then
-  add_step "WezTerm on Windows + config sync - winget install; copy wezterm.lua + zed settings.json" step_wezterm_windows
+  step_wezterm_windows
 fi
-N_STEPS="${#STEPS_FN[@]}"
-
-# Parse the raw selection string into the SELECTED array (ascending, deduped).
-# Returns non-zero on invalid input; prints the offending token.
-parse_selection() {
-  local input="$1" tok a b i
-  SELECTED=()
-  [ -z "$input" ] && return 0
-  input="${input//,/ }"       # commas act as separators too
-  [ -z "${input//[[:space:]]/}" ] && {
-    echo "    Nothing entered (empty input)."
-    return 1
-  }
-  for tok in $input; do
-    if [[ "$tok" =~ ^([0-9]+)-([0-9]+)$ ]]; then
-      a="${BASH_REMATCH[1]}"
-      b="${BASH_REMATCH[2]}"
-      if (( a > b )); then
-        echo "    Invalid range: $tok"
-        return 1
-      fi
-      for (( i = a; i <= b; i++ )); do
-        if (( i < 1 || i > N_STEPS )); then
-          echo "    Invalid item: $i (max $N_STEPS)"
-          return 1
-        fi
-        SELECTED+=("$i")
-      done
-    elif [[ "$tok" =~ ^[0-9]+$ ]]; then
-      if (( tok < 1 || tok > N_STEPS )); then
-        echo "    Invalid item: $tok (max $N_STEPS)"
-        return 1
-      fi
-      SELECTED+=("$tok")
-    else
-      echo "    Invalid input: $tok"
-      return 1
-    fi
-  done
-  SELECTED=($(printf '%s\n' "${SELECTED[@]}" | sort -nu))
-  return 0
-}
-
-contains_step() {
-  local want="$1" s
-  for s in "${SELECTED[@]}"; do
-    [ "$s" = "$want" ] && return 0
-  done
-  return 1
-}
-
-force_step() {
-  local want="$1" why="$2" s
-  for s in "${SELECTED[@]}"; do
-    [ "$s" = "$want" ] && return 0
-  done
-  echo "    Adding item $want: ${STEPS_DESC[$((want - 1))]} ($why)"
-  SELECTED+=("$want")
-  SELECTED=($(printf '%s\n' "${SELECTED[@]}" | sort -nu))
-}
-
-select_steps() {
-  echo
-  echo "==> Interactive setup - pick what to run"
-  for (( i = 0; i < N_STEPS; i++ )); do
-    local desc="${STEPS_DESC[$i]}"
-    if (( i + 1 == 4 )); then
-      if [ -f "$NOFISH" ]; then
-        desc="$desc (currently: off)"
-      else
-        desc="$desc (currently: on)"
-      fi
-    fi
-    printf '   [%d] %s\n' "$((i + 1))" "$desc"
-  done
-  echo
-
-  if [ -t 0 ]; then
-    while true; do
-      printf '   Choose items (e.g. "1 3 5-7", "all", "none"; Enter = all): '
-      if ! read -r input; then
-        echo
-        echo "    Input closed; exiting."
-        exit 0
-      fi
-      if [ -z "$input" ] || [ "$input" = "all" ]; then
-        SELECTED=($(seq 1 "$N_STEPS"))
-        return 0
-      fi
-      if [ "$input" = "none" ]; then
-        echo "    Nothing selected; exiting."
-        exit 0
-      fi
-      if parse_selection "$input"; then
-        return 0
-      fi
-      echo "    Try again."
-    done
-  else
-    # Non-interactive stdin: single shot. EOF or empty = run everything.
-    if ! read -r input; then input=""; fi
-    if [ -z "$input" ] || [ "$input" = "all" ]; then
-      SELECTED=($(seq 1 "$N_STEPS"))
-      return 0
-    fi
-    if [ "$input" = "none" ]; then
-      echo "    Nothing selected; exiting."
-      exit 0
-    fi
-    if ! parse_selection "$input"; then
-      echo "    Invalid input; running all steps."
-      SELECTED=($(seq 1 "$N_STEPS"))
-    fi
-    return 0
-  fi
-}
-
-# ---------------------------------------------------------------------------
-# Main flow
-# ---------------------------------------------------------------------------
-
-select_steps
-
-# Harden prerequisites for the home-manager switch (step 5).
-if contains_step 5; then
-  force_step 2 "the home-manager switch reads ~/.dotfiles"
-  force_step 3 "the home-manager switch must run with the correct username"
-  if ! command -v nix >/dev/null 2>&1; then
-    force_step 1 "nix must be installed for the home-manager switch"
-  fi
-fi
-
-# Fish marker follows item 4's selection: selected => enabled (step_fish
-# removes the marker), deselected => disabled so steps 5/6 see the right state.
-if ! contains_step 4; then
-  if [ ! -f "$NOFISH" ]; then
-    touch "$NOFISH"
-    echo "    Item 4 (Fish) not selected - disabled ($NOFISH created)."
-    echo "    Home-manager and WezTerm will use your default shell instead."
-  fi
-fi
-
-echo
-echo "==> Will run:"
-for s in "${SELECTED[@]}"; do
-  printf '    [%d] %s\n' "$s" "${STEPS_DESC[$((s - 1))]}"
-done
-echo
-
-for s in "${SELECTED[@]}"; do
-  "${STEPS_FN[$((s - 1))]}"
-done
 
 echo
 echo "==> Done. Use ./refresh.sh for future changes."
