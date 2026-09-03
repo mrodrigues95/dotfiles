@@ -29,6 +29,24 @@
       "pluginName": "mattpocock-skills",
       "installedAt": "2026-09-03T19:59:24.138Z",
       "updatedAt": "2026-09-03T19:59:24.138Z"
+    },
+    "ponytail": {
+      "source": "dietrichgebert/ponytail",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/dietrichgebert/ponytail.git",
+      "skillPath": "skills/ponytail/SKILL.md",
+      "skillFolderHash": "cb6e53477eaf04e6daeca22feacb85f9ce20d40c",
+      "installedAt": "2026-09-03T20:10:56.858Z",
+      "updatedAt": "2026-09-03T20:10:56.858Z"
+    },
+    "ponytail-review": {
+      "source": "dietrichgebert/ponytail",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/dietrichgebert/ponytail.git",
+      "skillPath": "skills/ponytail-review/SKILL.md",
+      "skillFolderHash": "dc6d9660c4297496a9220de377f6f7df38ab1a53",
+      "installedAt": "2026-09-03T20:11:19.009Z",
+      "updatedAt": "2026-09-03T20:11:19.009Z"
     }
   },
   "dismissed": {
