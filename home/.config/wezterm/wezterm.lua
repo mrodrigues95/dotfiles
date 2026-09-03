@@ -6,6 +6,7 @@ config.font_size = 12.0
 config.window_decorations = "RESIZE"
 config.warn_about_missing_glyphs = false
 config.use_fancy_tab_bar = false
+config.adjust_window_size_when_changing_font_size = false
 
 -- fps
 config.max_fps = 240
@@ -74,6 +75,16 @@ config.keys = {
         key = "l",
         action = wezterm.action.AdjustPaneSize { "Down", 5 }
     },
+    {
+        mods = "CTRL|SHIFT",
+        key = "=",
+        action = wezterm.action.IncreaseFontSize
+    },
+    {
+        mods = "CTRL|SHIFT",
+        key = "-",
+        action = wezterm.action.DecreaseFontSize
+    }
 }
 
 -- set the default shell: fish from the home-manager nix profile when it is
