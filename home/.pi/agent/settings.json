@@ -10,8 +10,7 @@
     "npm:pi-mcp-adapter",
     "npm:pi-web-access",
     "npm:@ff-labs/pi-fff",
-    "git:github.com/DietrichGebert/ponytail",
-    "npm:@juicesharp/rpiv-advisor"
+    "npm:pi-blackhole"
   ],
   "lastChangelogVersion": "0.84.1"
 }

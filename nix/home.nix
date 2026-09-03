@@ -101,8 +101,6 @@ in
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.config/zed";
   home.file.".config/herdr".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.config/herdr";
-  home.file.".config/rpiv-advisor".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.config/rpiv-advisor";
 
   home.file.".config/opencode/AGENTS.md".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.agents/AGENTS.md";
@@ -121,4 +119,6 @@ in
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.pi/agent/extensions";
   home.file.".pi/agent/themes".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.pi/agent/themes";
+  home.file.".pi/agent/pi-blackhole/pi-blackhole-config.json".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.pi/agent/pi-blackhole/pi-blackhole-config.json";
 }
