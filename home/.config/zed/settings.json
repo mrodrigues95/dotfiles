@@ -3,5 +3,11 @@
     "entry_spacing": "standard",
     "dock": "left"
   },
-  "theme": "One Light"
+  "auto_install_extensions": {
+    "html": true,
+    "lua": true,
+    "oxc": true,
+    "nvim-nightfox": true
+  },
+  "theme": "Nightfox - opaque"
 }
