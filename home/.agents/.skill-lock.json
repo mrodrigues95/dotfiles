@@ -30,23 +30,32 @@
       "installedAt": "2026-09-03T19:59:24.138Z",
       "updatedAt": "2026-09-03T19:59:24.138Z"
     },
-    "ponytail": {
-      "source": "dietrichgebert/ponytail",
+    "general-code-reviewing": {
+      "source": "lox/agent-skills",
       "sourceType": "github",
-      "sourceUrl": "https://github.com/dietrichgebert/ponytail.git",
-      "skillPath": "skills/ponytail/SKILL.md",
-      "skillFolderHash": "cb6e53477eaf04e6daeca22feacb85f9ce20d40c",
-      "installedAt": "2026-09-03T20:10:56.858Z",
-      "updatedAt": "2026-09-03T20:10:56.858Z"
+      "sourceUrl": "https://github.com/lox/agent-skills.git",
+      "skillPath": "general-code-reviewing/SKILL.md",
+      "skillFolderHash": "6f357cb14cd0051e47339b55c68b4361df705617",
+      "installedAt": "2026-09-06T15:35:45.132Z",
+      "updatedAt": "2026-09-06T15:37:08.740Z"
     },
-    "ponytail-review": {
-      "source": "dietrichgebert/ponytail",
+    "adversarial-code-reviewing": {
+      "source": "lox/agent-skills",
       "sourceType": "github",
-      "sourceUrl": "https://github.com/dietrichgebert/ponytail.git",
-      "skillPath": "skills/ponytail-review/SKILL.md",
-      "skillFolderHash": "dc6d9660c4297496a9220de377f6f7df38ab1a53",
-      "installedAt": "2026-09-03T20:11:19.009Z",
-      "updatedAt": "2026-09-03T20:11:19.009Z"
+      "sourceUrl": "https://github.com/lox/agent-skills.git",
+      "skillPath": "adversarial-code-reviewing/SKILL.md",
+      "skillFolderHash": "572afd490fb2bc24f623b81a55dd0b38a7a5aba5",
+      "installedAt": "2026-09-06T15:37:08.737Z",
+      "updatedAt": "2026-09-06T15:37:08.737Z"
+    },
+    "simplicity-review": {
+      "source": "lox/agent-skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/lox/agent-skills.git",
+      "skillPath": "simplicity-review/SKILL.md",
+      "skillFolderHash": "efbf8891fca6225b2e08d545a1764098e8b2c0fb",
+      "installedAt": "2026-09-06T15:37:08.741Z",
+      "updatedAt": "2026-09-06T15:37:08.741Z"
     }
   },
   "dismissed": {
