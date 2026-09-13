@@ -11,6 +11,21 @@
     "nvim-nightfox": true
   },
   "lsp": {
+     "vtsls": {
+       "settings": {
+         "typescript": {
+           "updateImportsOnFileMove": {
+             "enabled": "always"
+           }
+         },
+         "javascript": {
+           "updateImportsOnFileMove": {
+             "enabled": "always"
+           }
+         }
+       },
+       "enable_lsp_tasks": true
+     },
      "oxlint": {
        "initialization_options": {
          "settings": {
