@@ -1,0 +1,14 @@
+{
+  "skills": {
+    "mcp-scripting": "enabled"
+  },
+  "projects": {
+    "/home/mrodrigues/dev/9bar": {
+      "skills": {
+        "toolkit": "enabled",
+        "web": "enabled",
+        "a11y": "enabled"
+      }
+    }
+  }
+}
