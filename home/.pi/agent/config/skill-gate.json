@@ -7,7 +7,8 @@
       "skills": {
         "toolkit": "enabled",
         "web": "enabled",
-        "a11y": "enabled"
+        "a11y": "enabled",
+        "coding-standards": "enabled"
       }
     }
   }
