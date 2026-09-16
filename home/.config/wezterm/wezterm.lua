@@ -8,11 +8,9 @@ config.warn_about_missing_glyphs = false
 config.use_fancy_tab_bar = false
 config.adjust_window_size_when_changing_font_size = false
 
--- fps
 config.max_fps = 240
 config.animation_fps = 240
 
--- keybinds
 config.leader = { key = "q", mods = "CTRL", timeout_milliseconds = 1000 }
 config.keys = {
     {
@@ -87,35 +85,24 @@ config.keys = {
     }
 }
 
--- set the default shell: fish from the home-manager nix profile when it is
--- installed, otherwise leave the OS default shell. Honors bootstrap's fish
--- toggle (~/.nofish): when fish is skipped the binary is absent and WezTerm
--- falls back to the user's own shell instead of failing on a missing path.
-local home = os.getenv("HOME")
-
-if wezterm.target_triple:find("darwin") then
-  if home and io.open(home .. "/.nix-profile/bin/fish") then
-    config.default_prog = { home .. "/.nix-profile/bin/fish", "-l" }
-  end
-elseif wezterm.target_triple:find("windows") then
+-- WSL needs an explicit default_prog that probes for zsh; on macOS the
+-- default (the login shell) is already correct.
+if wezterm.target_triple:find("windows") then
   config.wsl_domains = {
     {
       name = "WSL:Ubuntu",
       distribution = "Ubuntu",
-      default_cwd = "/home/mrodrigues",
-      -- Resolve the shell inside WSL: exec fish when the nix profile has it,
-      -- otherwise fall back to the WSL login shell (e.g. bash).
+      default_cwd = "~",
       default_prog = {
         "bash",
         "-c",
-        'if [ -x "$HOME/.nix-profile/bin/fish" ]; then exec "$HOME/.nix-profile/bin/fish" -l; else exec "$SHELL" -l; fi',
+        'if command -v zsh >/dev/null 2>&1; then exec zsh -l; else exec "$SHELL" -l; fi',
       },
     },
   }
   config.default_domain = "WSL:Ubuntu"
 end
 
--- set terminal size and position
 wezterm.on("gui-startup", function(cmd)
   local screen = wezterm.gui.screens().active
 
@@ -133,7 +120,6 @@ wezterm.on("gui-startup", function(cmd)
   window:gui_window():set_inner_size(width, height)
 end)
 
--- show leader status in the right status bar
 wezterm.on('update-right-status', function(window, pane)
   local leader = ''
   if window:leader_is_active() then

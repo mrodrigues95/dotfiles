@@ -1,0 +1,18 @@
+# The [tools] list for every shell: install.sh symlinks this file to
+# ~/.config/mise/config.toml. Keep it free of relative paths — a symlinked
+# config resolves them from its own directory — so packages, dotfiles and
+# tasks stay in mise/config.toml.
+
+min_version = "2026.9.0"
+
+[tools]
+node = "24"
+ripgrep = "latest"
+fd = "latest"
+fzf = "latest"
+jq = "latest"
+eza = "latest"
+starship = "latest"
+herdr = "latest"
+# Only needed to rebuild pi's node-pty against system glibc on Linux.
+zig = { version = "latest", os = "linux" }
