@@ -4,6 +4,14 @@
 export PATH="$HOME/.local/share/npm-global/bin:$HOME/.local/bin:$PATH"
 [ -d "$HOME/.opencode/bin" ] && export PATH="$HOME/.opencode/bin:$PATH"
 
+# Must precede the mise block below: `mise completion` registers itself with
+# `compdef`, which only exists once compinit has run.
+autoload -Uz compinit
+_comp_dump="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/.zcompdump"
+mkdir -p "${_comp_dump:h}"
+compinit -C -d "$_comp_dump"
+unset _comp_dump
+
 if [ -x "$HOME/.local/bin/mise" ]; then
   eval "$(mise activate zsh)"
   eval "$(mise completion zsh)"
@@ -11,12 +19,6 @@ fi
 
 HISTFILE="$HOME/.zsh_history" HISTSIZE=10000 SAVEHIST=10000
 setopt SHARE_HISTORY HIST_IGNORE_DUPS AUTO_CD
-
-autoload -Uz compinit
-_comp_dump="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/.zcompdump"
-mkdir -p "${_comp_dump:h}"
-compinit -C -d "$_comp_dump"
-unset _comp_dump
 
 # Inline autosuggestions, wherever the package manager put them.
 for _asp in \
