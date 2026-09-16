@@ -5,7 +5,10 @@ min_version = "2026.9.0"
 
 [settings]
 # Targets below without an explicit source resolve to home/<same path under ~>.
-dotfiles.root = "home"
+# Must be absolute: a relative root makes mise link ~/.zshrc -> "home/.zshrc",
+# which resolves against $HOME and dangles. ~/.dotfiles is the repo symlink
+# install.sh creates before this phase runs.
+dotfiles.root = "~/.dotfiles/home"
 
 [bootstrap.packages]
 # OS packages that aren't mise tools. Entries for a package manager that isn't
