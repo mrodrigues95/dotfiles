@@ -31,32 +31,7 @@ mise dot apply --dry-run
 mise bootstrap status --missing
 ```
 
-## Coming from the old Nix setup
-
-Machines that ran the previous Nix/home-manager bootstrap must run this step
-first — the old symlinks point into `/nix/store`, and `mise dot`
-reports those entries as already `applied` (it only checks that the target
-is a link), so `apply` would silently skip them and they would dangle once
-Nix is uninstalled. Regular-file conflicts would instead need
-`--force-dotfiles`:
-
-```sh
-./cleanup.sh            # preview what would be removed (changes nothing)
-./cleanup.sh --apply    # prompted, ordered, re-runnable
-./install.sh
-```
-
-`cleanup.sh` installs zsh first, removes home-manager's store symlinks and
-generations, drops Nix PATH lines from rc files (backed up), and offers the
-Determinate uninstaller. It never touches `~/.pi/agent` runtime state
-(auth, models), `home/` content, or the old nvm Node (kept until mise's
-Node is verified). It refuses to run while Nix fish is your current shell —
-`chsh` away and re-login first.
-
-After `mise bootstrap` converges and tools check out, uninstall
-Determinate Nix (if `cleanup.sh` didn't already):
-`/nix/nix-installer uninstall`. Then set zsh as your login shell:
-`chsh -s $(command -v zsh)`.
+Set zsh as your login shell once it converges: `chsh -s $(command -v zsh)`.
 
 ## Daily use
 
@@ -93,7 +68,6 @@ mise bootstrap status --missing # anything not yet converged (exit 1 if so)
 - `mise/global-config.toml` — the `[tools]` list, single source of truth
   (symlinked to `~/.config/mise/config.toml` so every shell gets tools)
 - `mise/tasks/bootstrap.sh` — provisioning task (Pi CLI, node-pty, WSL Windows sync)
-- `cleanup.sh` — one-time migration off the old Nix setup (dry-run by default)
 - `home/` — the live config files (symlinked into `~`)
 
 ## Where config lives
@@ -104,12 +78,6 @@ mise bootstrap status --missing # anything not yet converged (exit 1 if so)
 here edits your live config — no drift. On WSL, native Windows apps can't
 follow Linux symlinks, so the `bootstrap` task also copies wezterm.lua + zed
 settings to the Windows side. WezTerm pane chords use a CTRL+Q leader.
-
-## Shell
-
-zsh only. Prompt via starship; `ls`/`ll`/`la` → eza and `..`/bare
-directories via `AUTO_CD`, both in `.zshrc`; completions via compinit. mise
-activates in `.zshrc`, so `node`, `rg`, `eza`, … are on PATH in every shell.
 
 ## Node
 
@@ -128,7 +96,7 @@ mise ls --current      # what's active in this shell
 
 `mise use -g` edits `~/.config/mise/config.toml`, a symlink to the repo's
 `mise/global-config.toml`, so commit the change. A bare `mise use` run from
-*inside* `~/.dotfiles` would target `mise/config.toml` (the packages, dotfiles
+_inside_ `~/.dotfiles` would target `mise/config.toml` (the packages, dotfiles
 and tasks file) instead — add `-g` there, or run it from a project directory.
 
 ## Pi
