@@ -83,19 +83,53 @@ done
 
 # 4. hm-session-vars sourcing + nix PATH leftovers in shell rc files (backed
 # up as <rc>.bak next to each edited file).
-for rc in "$HOME/.bashrc" "$HOME/.profile" "$HOME/.zshrc"; do
-  [ -f "$rc" ] || continue
-  if grep -qE 'hm-session-vars|nix-profile|/nix/var/nix/profiles' "$rc" 2>/dev/null; then
-    echo "  [..] nix lines in $rc"
-    run sed -i.bak -E '/hm-session-vars|nix-profile|\/nix\/var\/nix\/profiles/d' "$rc"
+#
+# Not sed -i: BSD sed refuses to edit symlinks in place and GNU sed replaces
+# the link with a regular file, while a home-manager target is a read-only
+# /nix/store path. Store links are removed; anything else is rewritten through
+# its own path, which follows symlinks and leaves them intact.
+strip_nix_lines() {
+  local file="$1" pat="$2" tmp
+  if is_store_link "$file"; then
+    echo "  [..] store link: $file"
+    run rm "$file"
+    return
   fi
+  grep -qE "$pat" "$file" 2>/dev/null || return 0
+  echo "  [..] nix lines in $file"
+  if [ "$APPLY" = "0" ]; then
+    echo "      [dry-run] would edit $file (backup: $file.bak)"
+    return
+  fi
+  tmp="$(mktemp)"
+  grep -vE "$pat" "$file" > "$tmp"
+  cp "$file" "$file.bak"
+  cat "$tmp" > "$file"
+  rm -f "$tmp"
+}
+
+for rc in "$HOME/.bashrc" "$HOME/.profile" "$HOME/.zshrc"; do
+  [ -e "$rc" ] || [ -L "$rc" ] || continue
+  strip_nix_lines "$rc" 'hm-session-vars|nix-profile|/nix/var/nix/profiles'
 done
-# Fish config belongs to the removed setup; leave the file but neutralize the
-# store-sourced line so a stray fish invocation can't fail.
-FISH_RC="$HOME/.config/fish/config.fish"
-if [ -f "$FISH_RC" ] && grep -q 'hm-session-vars' "$FISH_RC" 2>/dev/null; then
-  echo "  [..] hm-session-vars source in fish config"
-  run sed -i.bak -E '/hm-session-vars/d' "$FISH_RC"
+# Fish config belongs to the removed setup; every store symlink in it
+# (config.fish, conf.d/*, functions/*) would dangle once Nix is uninstalled,
+# so drop them all before neutralizing the surviving config.
+FISH_DIR="$HOME/.config/fish"
+if is_store_link "$FISH_DIR"; then
+  echo "  [..] store link: $FISH_DIR"
+  run rm "$FISH_DIR"
+elif [ -d "$FISH_DIR" ]; then
+  while IFS= read -r link; do
+    [ -n "$link" ] || continue
+    echo "  [..] store link: $link"
+    run rm "$link"
+  done < <(find "$FISH_DIR" -type l -lname '/nix/store/*' 2>/dev/null)
+fi
+
+FISH_RC="$FISH_DIR/config.fish"
+if [ -e "$FISH_RC" ] || [ -L "$FISH_RC" ]; then
+  strip_nix_lines "$FISH_RC" 'hm-session-vars'
 fi
 
 # 5. Home-manager generations (must run while nix still works — before step 6).
