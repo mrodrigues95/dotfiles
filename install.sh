@@ -56,10 +56,36 @@ step_bootstrap() {
   echo "    Set zsh as login shell when ready: chsh -s \$(command -v zsh)"
 }
 
+step_verify_links() {
+  echo "==> Step 5: Verify managed links resolve"
+  # mise dot status can report applied while a link dangles (it compares
+  # sources from the repo cwd, not the on-disk link target), so check the
+  # filesystem itself: -e follows symlinks and fails on a broken chain.
+  local status targets t bad=0
+  status="$(cd "$DIR" && "$MISE_BIN" dot status 2>&1)"
+  targets="$(printf '%s\n' "$status" | awk '{print $1}' | grep '^~/' || true)"
+  while IFS= read -r t; do
+    [ -n "$t" ] || continue
+    t="${t/#\~/$HOME}"
+    if [ ! -e "$t" ]; then
+      echo "  [FAIL] $t -> $(readlink "$t" 2>/dev/null || echo absent)"
+      bad=1
+    fi
+  done <<< "$targets"
+  if [ "$bad" = "1" ]; then
+    echo "  Broken links mean the new shell has no config; repair with:"
+    echo "    mise -C ~/.dotfiles dot apply"
+    echo "  (add --force if a real file now blocks a link)"
+    exit 1
+  fi
+  echo "  all managed links resolve"
+}
+
 step_install_mise
 step_symlink_repo
 step_guard
 step_bootstrap
+step_verify_links
 
 echo ""
 echo "==> Done."
