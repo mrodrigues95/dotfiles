@@ -45,3 +45,7 @@ _wezterm_shell_integration() {
 }
 autoload -Uz add-zsh-hook
 add-zsh-hook precmd _wezterm_shell_integration
+
+# Machine-local settings that must not be committed (work hosts, secrets).
+# Sourced last so it can override anything above; absent on most machines.
+[ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"
