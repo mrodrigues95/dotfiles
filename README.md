@@ -111,6 +111,26 @@ zsh only. Prompt via starship; `ls`/`ll`/`la` → eza and `..`/bare
 directories via `AUTO_CD`, both in `.zshrc`; completions via compinit. mise
 activates in `.zshrc`, so `node`, `rg`, `eza`, … are on PATH in every shell.
 
+## Node
+
+Node is managed by mise (`node = "24"` in `mise/global-config.toml`). There
+is no nvm, and mise doesn't need one — it installs and switches Node versions
+natively; nvm's `nvm` command is a sourced shell function, not a binary, so
+mise can't provide it as a tool anyway.
+
+```sh
+mise ls-remote node    # versions available
+cd ~/some/project
+mise use node@20       # writes mise.toml there and installs 20.x
+mise use -g node@lts   # change the global default
+mise ls --current      # what's active in this shell
+```
+
+`mise use -g` edits `~/.config/mise/config.toml`, a symlink to the repo's
+`mise/global-config.toml`, so commit the change. A bare `mise use` run from
+*inside* `~/.dotfiles` would target `mise/config.toml` (the packages, dotfiles
+and tasks file) instead — add `-g` there, or run it from a project directory.
+
 ## Pi
 
 Pi installs via npm into `~/.local/share/npm-global` (a version-independent
