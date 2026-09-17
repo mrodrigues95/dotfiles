@@ -1,8 +1,5 @@
 onboarding = false
 
-[terminal]
-default_shell = "herdr-shell"
-
 [ui]
 # Agents panel order: explicit choice of "spaces" (grouped by space, the default) over "priority".
 agent_panel_sort = "spaces"
