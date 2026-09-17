@@ -1,6 +1,6 @@
 {
   "defaultProvider": "opencode-go",
-  "defaultModel": "deepseek-v4.1-flash",
+  "defaultModel": "deepseek-v4-flash",
   "defaultThinkingLevel": "max",
   "tuiMode": "regular",
   "theme": "dark",
@@ -13,5 +13,5 @@
     "npm:pi-blackhole",
     "npm:pi-skill-gate"
   ],
-  "lastChangelogVersion": "0.84.1"
+  "lastChangelogVersion": "0.85.1"
 }

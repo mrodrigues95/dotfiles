@@ -1,0 +1,45 @@
+# Project config: run `mise -C ~/.dotfiles <cmd>` (install.sh does the cd).
+# Versioned tools live in mise/global-config.toml.
+
+min_version = "2026.9.0"
+
+[settings]
+# Targets below without an explicit source resolve to home/<same path under ~>.
+# Must be absolute: a relative root makes mise link ~/.zshrc -> "home/.zshrc",
+# which resolves against $HOME and dangles. ~/.dotfiles is the repo symlink
+# install.sh creates before this phase runs.
+dotfiles.root = "~/.dotfiles/home"
+
+[bootstrap.packages]
+# OS packages that aren't mise tools. Entries for a package manager that isn't
+# present are ignored, so macOS and WSL share this file.
+"apt:zsh" = "latest"
+"apt:zsh-autosuggestions" = "latest"
+"apt:build-essential" = "latest"
+"brew:zsh-autosuggestions" = { os = "macos" }
+"brew-cask:wezterm" = { os = "macos" }
+"brew-cask:font-hack-nerd-font" = { os = ["macos", "linux"] }
+# WezTerm on WSL comes from mise/tasks/bootstrap.sh (winget).
+
+[dotfiles]
+"~/.zshrc" = {}
+"~/.agents" = {}
+"~/.config/wezterm" = {}
+"~/.config/zed" = {}
+"~/.config/herdr" = {}
+"~/.config/starship.toml" = {}
+# One AGENTS.md aliased to every agent tool; an explicit source is relative to
+# this file (mise/), unlike the `{}` entries above which use dotfiles.root.
+"~/.config/opencode/AGENTS.md" = "../home/.agents/AGENTS.md"
+"~/.claude/CLAUDE.md" = "../home/.agents/AGENTS.md"
+"~/.codex/AGENTS.md" = "../home/.agents/AGENTS.md"
+"~/.pi/agent/AGENTS.md" = "../home/.agents/AGENTS.md"
+# Pi: authored files only; runtime state (auth, sessions, npm) stays local.
+"~/.pi/agent/settings.json" = {}
+"~/.pi/agent/extensions" = {}
+"~/.pi/agent/config/skill-gate.json" = {}
+"~/.pi/agent/pi-blackhole/pi-blackhole-config.json" = {}
+
+[tasks.bootstrap]
+description = "Finish machine setup after packages, dotfiles, and tools: Pi CLI, node-pty, WSL Windows-side apps"
+file = "mise/tasks/bootstrap.sh"
