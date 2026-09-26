@@ -28,7 +28,7 @@ step_pi() {
     echo "    pi already installed ($(pi --version 2>/dev/null || echo unknown)), skipping"
   fi
 
-  echo "--> pi: checking pinned extension packages"
+  echo "--> pi: checking extension packages"
   while IFS= read -r PI_PKG; do
     [ -n "$PI_PKG" ] || continue
     echo "    pi install $PI_PKG"
@@ -37,7 +37,7 @@ step_pi() {
 }
 
 step_node_pty() {
-  # Pi's pinned extension needs node-pty (a native module with no Linux
+  # The plannotator extension pulls in node-pty (a native module with no Linux
   # prebuild); rebuild it only when it actually fails to load.
   node_pty_ok() {
     node -e "require(process.env.HOME + '/.pi/agent/npm/node_modules/node-pty')" >/dev/null 2>&1
@@ -81,15 +81,19 @@ step_wezterm_windows() {
   # WSL only: WezTerm runs on the Windows side. Install once, sync config always.
   [ "$(uname -s)" = "Linux" ] || return 0
   command -v cmd.exe >/dev/null 2>&1 || return 0
-  if cmd.exe /c 'where wezterm' >/dev/null 2>&1; then
+  WIN_CWD=/mnt/c
+  [ -d "$WIN_CWD" ] || WIN_CWD="$HOME"
+  win_cmd() { ( cd "$WIN_CWD" && cmd.exe /c "$1" ); }
+
+  if win_cmd 'winget list --exact --id wez.wezterm' >/dev/null 2>&1; then
     echo "--> WezTerm already installed on Windows, skipping winget"
   else
     echo "--> installing WezTerm via winget ..."
-    cmd.exe /c 'winget install --id wez.wezterm --accept-source-agreements --accept-package-agreements' || {
+    win_cmd 'winget install --id wez.wezterm --accept-source-agreements --accept-package-agreements' || {
       echo "    WARNING: winget install failed; install manually from https://wezterm.org"
     }
   fi
-  WIN_PROFILE="$(wslpath -u "$(cmd.exe /c 'echo %USERPROFILE%' 2>/dev/null | tr -d '\r')")"
+  WIN_PROFILE="$(wslpath -u "$(win_cmd 'echo %USERPROFILE%' 2>/dev/null | tr -d '\r')")"
   if [ -n "$WIN_PROFILE" ]; then
     mkdir -p "$WIN_PROFILE/.config/wezterm" "$WIN_PROFILE/AppData/Roaming/Zed"
     cp "$REPO_ROOT/home/.config/wezterm/wezterm.lua" "$WIN_PROFILE/.config/wezterm/wezterm.lua"
