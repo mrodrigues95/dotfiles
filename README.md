@@ -85,7 +85,12 @@ Node upgrades do not orphan it). Runtime state stays local; only authored files
 under `home/.pi/agent` are managed (settings, extensions, AGENTS.md, skill-gate,
 pi-blackhole config).
 
-On WSL, Pi's pinned extension needs `node-pty`, which has no Linux prebuild.
+Packages are unpinned, so `pi update --all` refreshes the CLI and every
+registered extension. Re-running `bootstrap` replays `pi install` for each
+entry in `settings.json`, which is a no-op once converged.
+
+On WSL, the `@plannotator/pi-extension` package needs `node-pty` (pulled in via
+`@plannotator/webtui`), which has no Linux prebuild.
 `bootstrap` rebuilds it with zig (from mise `[tools]`) against your glibc when
 the load check fails. Manual fallback:
 

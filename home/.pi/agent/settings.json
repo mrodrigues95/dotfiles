@@ -6,7 +6,7 @@
   "theme": "dark",
   "hideThinkingBlock": true,
   "packages": [
-    "npm:@plannotator/pi-extension@0.26.4",
+    "npm:@plannotator/pi-extension",
     "npm:pi-mcp-adapter",
     "npm:pi-web-access",
     "npm:@ff-labs/pi-fff",
