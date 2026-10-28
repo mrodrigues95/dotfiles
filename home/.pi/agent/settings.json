@@ -5,6 +5,7 @@
   "tuiMode": "regular",
   "theme": "dark",
   "hideThinkingBlock": true,
+  "defaultTools": ["+codemode"],
   "packages": [
     "npm:@plannotator/pi-extension",
     "npm:pi-web-access",
