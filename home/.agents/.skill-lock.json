@@ -56,6 +56,15 @@
       "skillFolderHash": "efbf8891fca6225b2e08d545a1764098e8b2c0fb",
       "installedAt": "2026-09-06T15:37:08.741Z",
       "updatedAt": "2026-09-06T15:37:08.741Z"
+    },
+    "i-have-adhd": {
+      "source": "ayghri/i-have-adhd",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/ayghri/i-have-adhd.git",
+      "skillPath": "skills/i-have-adhd/SKILL.md",
+      "skillFolderHash": "759f1e56d0d2fdd3819d2a53b81e72767c08d914",
+      "installedAt": "2026-10-31T14:45:31.225Z",
+      "updatedAt": "2026-10-31T14:45:31.225Z"
     }
   },
   "dismissed": {
@@ -63,16 +72,17 @@
   },
   "lastSelectedAgents": [
     "amp",
-    "antigravity",
-    "antigravity-cli",
     "cline",
     "codex",
     "cursor",
-    "deepagents",
+    "droid",
+    "fx",
     "gemini-cli",
     "github-copilot",
+    "kilo",
     "kimi-code-cli",
     "opencode",
+    "pi",
     "warp",
     "zed"
   ]
