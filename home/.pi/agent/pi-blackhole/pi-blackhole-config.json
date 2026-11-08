@@ -6,30 +6,34 @@
   "sessionFallback": false,
 
   "observerModel": {
-    "provider": "opencode-go",
-    "id": "claude-haiku-5-5",
-    "thinking": "low"
+    "provider": "deeprelay",
+    "id": "deeprelay/glm-5.3-flash",
+    "thinking": "low",
+    "cooldownHours": 6
   },
   "observerFallbackModels": [
-    { "provider": "opencode-go", "id": "glm-5.3-flash", "thinking": "low" },
-    { "provider": "opencode-go", "id": "mimo-v2.6-flash" }
+    { "provider": "deeprelay", "id": "deeprelay/deepseek-v4.1-flash", "thinking": "low", "cooldownHours": 6 },
+    { "provider": "deeprelay", "id": "deeprelay/kimi-k3", "thinking": "low", "cooldownHours": 6 }
   ],
   "reflectorModel": {
-    "provider": "opencode-go",
-    "id": "minimax-m3",
-    "thinking": "low"
+    "provider": "deeprelay",
+    "id": "deeprelay/glm-5.3",
+    "thinking": "low",
+    "cooldownHours": 6
   },
   "reflectorFallbackModels": [
-    { "provider": "opencode-go", "id": "qwen3.8-flash", "thinking": "low" },
-    { "provider": "opencode-go", "id": "mimo-v2.6-flash" }
+    { "provider": "deeprelay", "id": "deeprelay/glm-5.3-flash", "thinking": "low", "cooldownHours": 6 },
+    { "provider": "deeprelay", "id": "deeprelay/deepseek-v4.1-flash", "thinking": "low", "cooldownHours": 6 }
   ],
   "dropperModel": {
-    "provider": "opencode-go",
-    "id": "gpt-6-luna",
-    "thinking": "off"
+    "provider": "deeprelay",
+    "id": "deeprelay/glm-5.3-flash",
+    "thinking": "off",
+    "cooldownHours": 6
   },
   "dropperFallbackModels": [
-    { "provider": "opencode-go", "id": "mimo-v2.6-flash" }
+    { "provider": "deeprelay", "id": "deeprelay/deepseek-v4.1-flash", "thinking": "off", "cooldownHours": 6 },
+    { "provider": "deeprelay", "id": "deeprelay/glm-5.3", "thinking": "off", "cooldownHours": 6 }
   ],
 
   "observeAfterTokens": 15000,
