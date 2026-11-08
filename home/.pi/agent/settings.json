@@ -1,19 +1,18 @@
 {
-  "defaultProvider": "opencode-go",
-  "defaultModel": "deepseek-v4.1-flash",
-  "defaultThinkingLevel": "max",
+  "defaultProvider": "deeprelay",
+  "defaultModel": "deeprelay/deepseek-v4.1-flash",
+  "defaultThinkingLevel": "high",
   "tuiMode": "regular",
   "theme": "dark",
   "hideThinkingBlock": true,
-  "defaultTools": [
-    "+codemode"
-  ],
+  "defaultTools": ["+codemode"],
   "packages": [
     "npm:@plannotator/pi-extension",
     "npm:pi-web-access",
     "npm:@ff-labs/pi-fff",
     "npm:pi-blackhole",
-    "npm:pi-skill-gate"
+    "npm:pi-skill-gate",
+    "npm:@gzgz/pi-deeprelay-provider"
   ],
   "lastChangelogVersion": "1.4.0"
 }
