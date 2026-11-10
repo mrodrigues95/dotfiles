@@ -34,6 +34,7 @@ dotfiles.root = "~/.dotfiles/home"
 "~/.claude/CLAUDE.md" = "../home/.agents/AGENTS.md"
 "~/.codex/AGENTS.md" = "../home/.agents/AGENTS.md"
 "~/.pi/agent/AGENTS.md" = "../home/.agents/AGENTS.md"
+"~/.claude/skills" = "../home/.agents/skills"
 # Pi: authored files only; runtime state (auth, sessions, npm) stays local.
 "~/.pi/agent/settings.json" = {}
 "~/.pi/agent/extensions" = {}
