@@ -47,12 +47,25 @@ Inspect state with `mise config ls`, `mise tasks ls`, `mise dot status`, and
 
 ## Repo layout
 
-- `install.sh`: installs mise, links repo, runs bootstrap
-- `mise/config.toml`: OS packages, dotfiles, `bootstrap` task
-- `mise/global-config.toml`: the `[tools]` list, linked to
-  `~/.config/mise/config.toml` so every shell gets tools
-- `mise/tasks/bootstrap.sh`: provisioning task (Pi CLI, node-pty, WSL sync)
-- `home/`: the live config files, symlinked into `~`
+```
+dotfiles/
+├── install.sh               # installs mise, links repo, runs bootstrap
+├── mise/
+│   ├── config.toml          # OS packages, dotfiles, bootstrap task
+│   ├── global-config.toml   # [tools] list, linked to ~/.config/mise/config.toml
+│   └── tasks/
+│       └── bootstrap.sh     # provisioning (Pi CLI, node-pty, WSL sync)
+└── home/                    # the live config files, symlinked into ~
+    ├── .zshrc
+    ├── .config/
+    │   ├── wezterm/         # terminal
+    │   ├── zed/             # editor
+    │   ├── herdr/           # workspace/tab/pane manager
+    │   ├── starship.toml    # prompt
+    │   └── ...
+    ├── .agents/             # shared skills + agent instructions
+    └── .pi/agent/           # authored Pi files (runtime state is gitignored)
+```
 
 ## Where config lives
 
