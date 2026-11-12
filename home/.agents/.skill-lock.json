@@ -84,6 +84,7 @@
     "opencode",
     "pi",
     "warp",
-    "zed"
+    "zed",
+    "claude-code"
   ]
 }

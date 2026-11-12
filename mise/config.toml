@@ -23,7 +23,6 @@ dotfiles.root = "~/.dotfiles/home"
 
 [dotfiles]
 "~/.zshrc" = {}
-"~/.agents" = {}
 "~/.config/wezterm" = {}
 "~/.config/zed" = {}
 "~/.config/herdr" = {}
@@ -34,7 +33,17 @@ dotfiles.root = "~/.dotfiles/home"
 "~/.claude/CLAUDE.md" = "../home/.agents/AGENTS.md"
 "~/.codex/AGENTS.md" = "../home/.agents/AGENTS.md"
 "~/.pi/agent/AGENTS.md" = "../home/.agents/AGENTS.md"
-"~/.claude/skills" = "../home/.agents/skills"
+"~/.agents/AGENTS.md" = {}
+"~/.agents/.skill-lock.json" = {}
+"~/.agents/skills/adversarial-code-reviewing" = {}
+"~/.agents/skills/bro" = {}
+"~/.agents/skills/general-code-reviewing" = {}
+"~/.agents/skills/grilling" = {}
+"~/.agents/skills/i-have-adhd" = {}
+"~/.agents/skills/show-me" = {}
+"~/.agents/skills/simplicity-review" = {}
+"~/.agents/skills/writing-for-agents" = {}
+"~/.claude/skills" = "~/.agents/skills"
 # Pi: authored files only; runtime state (auth, sessions, npm) stays local.
 "~/.pi/agent/settings.json" = {}
 "~/.pi/agent/extensions" = {}

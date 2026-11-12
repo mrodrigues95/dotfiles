@@ -69,9 +69,15 @@ dotfiles/
 
 ## Where config lives
 
-`home/` is the real config. `mise dot apply` symlinks `~/.zshrc`, `~/.agents`,
-`~/.config/{wezterm,zed,herdr,starship.toml}`, and `~/.pi/agent/*` authored files
-to matching repo paths, so editing here edits your live config with no drift. On
+`home/` is the real config. `mise dot apply` symlinks `~/.zshrc`,
+`~/.config/{wezterm,zed,herdr,starship.toml}`, `~/.pi/agent/*` authored files,
+and each shared skill in `~/.agents/skills/` to matching repo paths, so editing
+here edits your live config with no drift.
+
+`~/.agents/skills` itself is a real directory (and `~/.claude/skills` links to
+it), so a machine can keep its own skills there without touching the repo. To
+share a skill, add it under `home/.agents/skills/` and give it a `[dotfiles]`
+entry; to stop sharing one, `mise dot unapply` it before deleting the entry. On
 WSL, native Windows apps cannot follow Linux symlinks, so `bootstrap` also copies
 wezterm.lua and zed settings to the Windows side.
 
