@@ -1,7 +1,7 @@
 {
   "icon_theme": "Colored Zed Icons Theme Dark",
   "theme": {
-    "mode": "system",
+    "mode": "dark",
     "light": "One Light",
     "dark": "Carbonfox - opaque"
   },
