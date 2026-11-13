@@ -8,8 +8,8 @@ config.warn_about_missing_glyphs = false
 config.use_fancy_tab_bar = false
 config.adjust_window_size_when_changing_font_size = false
 
-config.max_fps = 240
-config.animation_fps = 240
+config.max_fps = 60
+config.animation_fps = 60
 
 config.leader = { key = "q", mods = "CTRL", timeout_milliseconds = 1000 }
 config.keys = {
