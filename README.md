@@ -54,7 +54,7 @@ dotfiles/
 │   ├── config.toml          # OS packages, dotfiles, bootstrap task
 │   ├── global-config.toml   # [tools] list, linked to ~/.config/mise/config.toml
 │   └── tasks/
-│       └── bootstrap.sh     # provisioning (Pi CLI, node-pty, WSL sync)
+│       └── bootstrap.sh     # provisioning (Pi packages, node-pty, WSL sync)
 └── home/                    # the live config files, symlinked into ~
     ├── .zshrc
     ├── .config/
@@ -99,14 +99,15 @@ there or run it from a project directory.
 
 ## Pi
 
-Pi installs via npm into `~/.local/share/npm-global` (version independent, so
-Node upgrades do not orphan it). Runtime state stays local; only authored files
-under `home/.pi/agent` are managed (settings, extensions, AGENTS.md, skill-gate,
-pi-blackhole config).
+The Pi CLI is a mise tool (`npm:@earendil-works/pi-coding-agent` in
+`mise/global-config.toml`), so Node upgrades do not orphan it and nothing sets
+an npm prefix in `~/.npmrc` (which breaks nvm in repos that use it). Runtime
+state stays local; only authored files under `home/.pi/agent` are managed
+(settings, extensions, AGENTS.md, skill-gate, pi-blackhole config).
 
-Packages are unpinned, so `pi update --all` refreshes the CLI and every
-registered extension. Re-running `bootstrap` replays `pi install` for each
-entry in `settings.json`, which is a no-op once converged.
+`mise up` refreshes the CLI; `pi update --all` refreshes every registered
+extension. Re-running `bootstrap` replays `pi install` for each entry in
+`settings.json`, which is a no-op once converged.
 
 On WSL, the `@plannotator/pi-extension` package needs `node-pty` (pulled in via
 `@plannotator/webtui`), which has no Linux prebuild.

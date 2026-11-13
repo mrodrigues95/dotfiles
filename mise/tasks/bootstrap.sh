@@ -1,31 +1,15 @@
 #!/usr/bin/env bash
 # mise bootstrap task: whatever the declarative phases can't express.
 # Runs on every `mise bootstrap`, so every step must be repeat-safe
-# ([tools] node/jq/zig are already on PATH when it runs).
+# ([tools] node/jq/zig/pi are already on PATH when it runs).
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
-NPM_GLOBAL="$HOME/.local/share/npm-global"
-
-step_npm_prefix() {
-  # A version-independent prefix, so `pi` survives node upgrades.
-  if [ "$(npm config get prefix 2>/dev/null)" != "$NPM_GLOBAL" ]; then
-    echo "--> npm: setting global prefix to $NPM_GLOBAL"
-    npm config set prefix "$NPM_GLOBAL"
-  fi
-  case ":$PATH:" in
-    *":$NPM_GLOBAL/bin:"*) ;;
-    *) export PATH="$NPM_GLOBAL/bin:$PATH" ;;
-  esac
-}
 
 step_pi() {
-  echo "--> pi: checking CLI"
   if ! command -v pi >/dev/null 2>&1; then
-    echo "    installing @earendil-works/pi-coding-agent ..."
-    npm install -g --ignore-scripts @earendil-works/pi-coding-agent
-  else
-    echo "    pi already installed ($(pi --version 2>/dev/null || echo unknown)), skipping"
+    echo "--> pi: CLI not on PATH (mise [tools] should provide it); skipping packages"
+    return
   fi
 
   echo "--> pi: checking extension packages"
@@ -104,7 +88,6 @@ step_wezterm_windows() {
   fi
 }
 
-step_npm_prefix
 step_pi
 step_node_pty
 step_wezterm_windows

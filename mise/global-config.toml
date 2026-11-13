@@ -15,5 +15,8 @@ jq = "latest"
 eza = "latest"
 starship = "latest"
 herdr = "latest"
+# Pi CLI. A mise tool rather than `npm install -g`, so it survives node upgrades
+# without an npm prefix in ~/.npmrc (nvm refuses to run when one is set).
+"npm:@earendil-works/pi-coding-agent" = "latest"
 # Only needed to rebuild pi's node-pty against system glibc on Linux.
 zig = { version = "latest", os = "linux" }

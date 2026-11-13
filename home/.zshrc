@@ -1,7 +1,7 @@
 # Symlinked from ~/.dotfiles/home/.zshrc by mise — edit the repo copy.
 
 # Version-independent bins first, so `mise` resolves below without a full path.
-export PATH="$HOME/.local/share/npm-global/bin:$HOME/.local/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
 [ -d "$HOME/.opencode/bin" ] && export PATH="$HOME/.opencode/bin:$PATH"
 
 # Must precede the mise block below: `mise completion` registers itself with
