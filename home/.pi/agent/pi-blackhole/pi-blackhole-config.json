@@ -5,35 +5,20 @@
   "memory": true,
   "sessionFallback": false,
 
-  "observerModel": {
-    "provider": "deeprelay",
-    "id": "deeprelay/glm-5.3-flash",
-    "thinking": "low",
-    "cooldownHours": 6
-  },
+  "model": { "provider": "pi-claude-cli", "id": "claude-sonnet-5-5", "thinking": "low", "cooldownHours": 6 },
+
+  "observerModel": { "provider": "pi-claude-cli", "id": "claude-haiku-5-5", "thinking": "low", "cooldownHours": 6 },
   "observerFallbackModels": [
-    { "provider": "deeprelay", "id": "deeprelay/deepseek-v4.1-flash", "thinking": "low", "cooldownHours": 6 },
-    { "provider": "deeprelay", "id": "deeprelay/kimi-k3", "thinking": "low", "cooldownHours": 6 }
+    { "provider": "pi-claude-cli", "id": "claude-sonnet-5", "thinking": "low", "cooldownHours": 6 }
   ],
-  "reflectorModel": {
-    "provider": "deeprelay",
-    "id": "deeprelay/glm-5.3",
-    "thinking": "low",
-    "cooldownHours": 6
-  },
+  "reflectorModel": { "provider": "pi-claude-cli", "id": "claude-sonnet-5", "thinking": "low", "cooldownHours": 6 },
   "reflectorFallbackModels": [
-    { "provider": "deeprelay", "id": "deeprelay/glm-5.3-flash", "thinking": "low", "cooldownHours": 6 },
-    { "provider": "deeprelay", "id": "deeprelay/deepseek-v4.1-flash", "thinking": "low", "cooldownHours": 6 }
+    { "provider": "pi-claude-cli", "id": "claude-sonnet-5-5", "thinking": "low", "cooldownHours": 6 },
+    { "provider": "pi-claude-cli", "id": "claude-haiku-5-5", "thinking": "low", "cooldownHours": 6 }
   ],
-  "dropperModel": {
-    "provider": "deeprelay",
-    "id": "deeprelay/glm-5.3-flash",
-    "thinking": "off",
-    "cooldownHours": 6
-  },
+  "dropperModel": { "provider": "pi-claude-cli", "id": "claude-haiku-5-5", "thinking": "off", "cooldownHours": 6 },
   "dropperFallbackModels": [
-    { "provider": "deeprelay", "id": "deeprelay/deepseek-v4.1-flash", "thinking": "off", "cooldownHours": 6 },
-    { "provider": "deeprelay", "id": "deeprelay/glm-5.3", "thinking": "off", "cooldownHours": 6 }
+    { "provider": "pi-claude-cli", "id": "claude-sonnet-5", "thinking": "off", "cooldownHours": 6 }
   ],
 
   "observeAfterTokens": 15000,

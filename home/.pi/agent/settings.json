@@ -1,18 +1,20 @@
 {
-  "defaultProvider": "deeprelay",
-  "defaultModel": "deeprelay/deepseek-v4.1-flash",
-  "defaultThinkingLevel": "high",
+  "defaultProvider": "pi-claude-cli",
+  "defaultModel": "claude-sonnet-5-5",
+  "defaultThinkingLevel": "medium",
   "tuiMode": "regular",
   "theme": "dark",
   "hideThinkingBlock": true,
-  "defaultTools": ["+codemode"],
+  "defaultTools": [
+    "+codemode"
+  ],
   "packages": [
     "npm:@plannotator/pi-extension",
     "npm:pi-web-access",
     "npm:@ff-labs/pi-fff",
     "npm:pi-blackhole",
     "npm:pi-skill-gate",
-    "npm:@gzgz/pi-deeprelay-provider"
+    "git:github.com/dmmulroy/pi-claude-cli"
   ],
-  "lastChangelogVersion": "1.5.0"
+  "lastChangelogVersion": "1.5.2"
 }
